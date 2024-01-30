@@ -23,4 +23,4 @@ killckb
 start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 echo $start_date >latest_start_date.txt
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
-./ckb --version >../sync_result_${start_date}.log
+./ckb --version >../result_${start_date}.log

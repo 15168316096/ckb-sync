@@ -33,12 +33,12 @@ echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localh
 start_date=$(cat latest_start_date.txt)
 
 # 检查sync_end是否存在，并且差值小于100
-if ! grep -q "sync_end" sync_result_${start_date}.log && [[ $difference -lt 100 ]]; then
+if ! grep -q "sync_end" result_${start_date}.log && [[ $difference -lt 100 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-    echo "sync_end: ${sync_end}" >>sync_result_${start_date}.log
+    echo "sync_end: ${sync_end}" >>result_${start_date}.log
 
     # 从日志文件中读取开始时间
-    sync_start=$(grep 'sync_start' sync_result_${start_date}.log | cut -d' ' -f2-)
+    sync_start=$(grep 'sync_start' result_${start_date}.log | cut -d' ' -f2-)
 
     # 将时间转换为秒
     start_sec=$(date -d "$sync_start" +%s)
@@ -53,5 +53,5 @@ if ! grep -q "sync_end" sync_result_${start_date}.log && [[ $difference -lt 100 
     minutes=$(((diff_sec % 3600) / 60))
     seconds=$((diff_sec % 60))
 
-    echo "同步耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>sync_result_${start_date}.log
+    echo "同步耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_date}.log
 fi
