@@ -33,7 +33,7 @@ echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localh
 start_date=$(cat latest_start_date.txt)
 
 # 检查sync_end是否存在，并且差值小于100
-if ! grep -q "sync_end" result_${start_date}.log && [[ $difference -lt 100 ]]; then
+if ! grep -q "sync_end" result_${start_date}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 100 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
     echo "sync_end: ${sync_end}" >>result_${start_date}.log
 
