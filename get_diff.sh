@@ -33,7 +33,7 @@ else
     sync_rate="无法计算"
 fi
 
-echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} ${env}_number: ${number} difference: ${difference}" sync_rate: ${sync_rate} >>diff.log
+echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} ${env}_number: ${number} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_date}.log
 
 # 检查sync_end是否存在，并且差值小于100
 if ! grep -q "sync_end" result_${start_date}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 100 ]]; then
