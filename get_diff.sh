@@ -22,7 +22,8 @@ if [[ $localhost_number =~ ^[0-9]+$ && $mainnet_number =~ ^[0-9]+$ ]]; then
     if [[ $difference -lt 0 ]]; then
         difference=$((-$difference)) # 转换为绝对值
     fi
-    sync_rate=$(echo "scale=1; $localhost_number / $mainnet_number * 100" | bc)%
+    sync_rate=$(echo "scale=10; $localhost_number * 100 / $mainnet_number" | bc | awk '{printf "%.2f\n", $0}')
+    sync_rate="${sync_rate}%"
 else
     difference="无法计算"
     sync_rate="无法计算"
