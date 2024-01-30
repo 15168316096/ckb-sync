@@ -3,6 +3,7 @@
 if [ ! -f "env.txt" ]; then
     echo "env.txt，使用默认环境'mainnet'"
     echo "mainnet" >env.txt
+    echo "2024-01-01" >>env.txt
 fi
 env=$(sed -n '1p' env.txt)
 start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
