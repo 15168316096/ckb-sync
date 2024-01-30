@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# 获取环境变量
+env=$(sed -n '1p' env.txt)
+start_date=$(sed -n '2p' env.txt)
+
 # 获取localhost_hex_number
 localhost_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$localhost_hex_number" ]]; then
@@ -9,11 +13,11 @@ else
 fi
 
 # 获取mainnet_hex_number
-mainnet_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://mainnet.ckbapp.dev | jq -r '.result.number' | sed 's/^0x//')
+hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://${env}.ckbapp.dev | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$mainnet_hex_number" ]]; then
-    mainnet_number="获取失败"
+    number="获取失败"
 else
-    mainnet_number=$((16#$mainnet_hex_number))
+    number=$((16#$hex_number))
 fi
 
 # 计算差值或指出无法计算
@@ -29,9 +33,7 @@ else
     sync_rate="无法计算"
 fi
 
-echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} mainnet_number: ${mainnet_number} difference: ${difference}" sync_rate: ${sync_rate} >>diff.log
-
-start_date=$(cat latest_start_date.txt)
+echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} ${env}_number: ${number} difference: ${difference}" sync_rate: ${sync_rate} >>diff.log
 
 # 检查sync_end是否存在，并且差值小于100
 if ! grep -q "sync_end" result_${start_date}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 100 ]]; then
