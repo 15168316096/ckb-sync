@@ -30,7 +30,7 @@ killckb() {
 killckb
 
 start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
-echo $start_date >>env.txt
+echo $start_date >>../env.txt
 ./ckb --version >../result_${start_date}.log
 
 # 初始化节点
