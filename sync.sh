@@ -34,6 +34,7 @@ echo $start_date >latest_start_date.txt
 
 # 初始化节点
 ./ckb init --chain ${env}
+echo "------------------------------"
 grep 'spec =' ckb.toml
 
 # 修改ckb.toml
@@ -47,7 +48,6 @@ new_module="\"Indexer\""
 sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
 grep "^modules =" ckb.toml
 
-tail -n 8 ckb.toml
 config_content="
 [metrics.exporter.prometheus]
 target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
