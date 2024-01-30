@@ -1,5 +1,5 @@
 .idea
 ckb_*
-latest_start_date.txt
-diff.log
-sync_result_*
+env.txt
+diff_*
+result_*
