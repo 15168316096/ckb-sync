@@ -14,7 +14,7 @@ if [ ! -f "$tar_name" ]; then
     wget "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
 fi
 
-rm -rf ckb_*_x86_64-unknown-linux-gnu
+sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
 tar xzvf ${tar_name}
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
