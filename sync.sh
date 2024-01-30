@@ -1,12 +1,11 @@
 #!/bin/bash
 
-if [ "$1" = "mainnet" ] || [ "$1" = "testnet" ]; then
-    env="$1"
-else
-    echo "提供的参数不合法，使用默认参数 'mainnet'"
-    env="mainnet"
+if [ ! -f "env.txt" ]; then
+    echo "env.txt，使用默认环境'mainnet'"
+    echo "mainnet" >env.txt
 fi
-echo $env >env.txt
+start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
+sed -i "2s/.*/$start_date/" env.txt
 
 ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases/latest | jq -r '.tag_name')
 tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
@@ -29,11 +28,8 @@ killckb() {
 
 killckb
 
-start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
-echo $start_date >>../env.txt
-./ckb --version >../result_${start_date}.log
-
 # 初始化节点
+./ckb --version >../result_${start_date}.log
 ./ckb init --chain ${env}
 echo "------------------------------------------------------------"
 grep 'spec =' ckb.toml

@@ -67,6 +67,20 @@ killckb() {
     done
 }
 
+toggle_env() {
+    local first_line=$(head -n 1 env.txt)
+
+    if [ "$first_line" = "testnet" ]; then
+        # 如果第一行是 testnet，则替换为 mainnet
+        sed -i "1s/.*/mainnet/" env.txt
+    elif [ "$first_line" = "mainnet" ]; then
+        # 如果第一行是 mainnet，则替换为 testnet
+        sed -i "1s/.*/testnet/" env.txt
+    else
+        echo "第一行既不是mainnet也不是testnet，未做任何更改"
+    fi
+}
+
 # 检查是否存在sync_end且不存在kill_time
 if grep -q "sync_end" result_${start_date}.log && ! grep -q "kill_time" result_${start_date}.log; then
     # 获取sync_end的Unix时间戳
@@ -85,5 +99,6 @@ if grep -q "sync_end" result_${start_date}.log && ! grep -q "kill_time" result_$
         # 调用killckb函数并记录kill_time
         killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")" >>result_${start_date}.log
+        toggle_env
     fi
 fi
