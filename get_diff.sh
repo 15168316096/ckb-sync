@@ -12,7 +12,7 @@ else
     localhost_number=$((16#$localhost_hex_number))
 fi
 
-# 获取mainnet或testnnet hex_number
+# 获取mainnet或testnnet的hex_number
 hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://${env}.ckbapp.dev | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$hex_number" ]]; then
     number="获取失败"
@@ -57,4 +57,29 @@ if ! grep -q "sync_end" result_${start_date}.log && [[ $difference =~ ^[0-9]+$ ]
     seconds=$((diff_sec % 60))
 
     echo "同步耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_date}.log
+fi
+
+killckb() {
+    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    for i in $PROCESS; do
+        echo "killed the ckb $i"
+        sudo kill -9 $i
+    done
+}
+
+# 检查是否存在sync_end且不存在kill_time
+if grep -q "sync_end" result_${start_date}.log && ! grep -q "kill_time" result_${start_date}.log; then
+    # 获取sync_end的时间
+    sync_end_time=$(grep 'sync_end' result_${start_date}.log | cut -d' ' -f2- | xargs -I {} date -d {} +%s)
+    # 获取当前时间
+    current_time=$(TZ='Asia/Shanghai' date +%s)
+    # 计算时间差（单位：秒）
+    time_diff=$((current_time - sync_end_time))
+
+    # 检查时间差是否超过6小时 (6小时 = 21600秒)
+    if [[ $time_diff -gt 21600 ]]; then
+        # 调用killckb函数并记录kill_time
+        killckb
+        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")" >>result_${start_date}.log
+    fi
 fi
