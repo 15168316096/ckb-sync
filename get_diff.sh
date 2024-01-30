@@ -69,12 +69,16 @@ killckb() {
 
 # 检查是否存在sync_end且不存在kill_time
 if grep -q "sync_end" result_${start_date}.log && ! grep -q "kill_time" result_${start_date}.log; then
-    # 获取sync_end的时间
-    sync_end_time=$(grep 'sync_end' result_${start_date}.log | cut -d' ' -f2- | xargs -I {} date -d {} +%s)
+    # 获取sync_end的Unix时间戳
+    sync_end_time_str=$(grep 'sync_end' result_2024-01-30.log | cut -d' ' -f2-)
+    sync_end_timestamp_utc=$(date -u -d "$sync_end_time_str" +%s)
+    # 调整时区差异（减去8小时）
+    sync_end_timestamp=$((sync_end_timestamp_utc - 8 * 3600))
+
     # 获取当前时间
-    current_time=$(TZ='Asia/Shanghai' date +%s)
+    current_timestamp=$(TZ='Asia/Shanghai' date +%s)
     # 计算时间差（单位：秒）
-    time_diff=$((current_time - sync_end_time))
+    time_diff=$((current_timestamp - sync_end_timestamp))
 
     # 检查时间差是否超过6小时 (6小时 = 21600秒)
     if [[ $time_diff -gt 21600 ]]; then
