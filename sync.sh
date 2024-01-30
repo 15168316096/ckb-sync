@@ -10,6 +10,16 @@ fi
 rm -rf ckb_${ckb_version}_x86_64-unknown-linux-gnu
 tar xzvf ${tar_name}
 
+killckb() {
+    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    for i in $PROCESS; do
+        echo "killed the ckb $i"
+        sudo kill -9 $i
+    done
+}
+
+killckb
+
 start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 echo $start_date >latest_start_date.txt
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
