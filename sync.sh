@@ -44,23 +44,23 @@ else
     toggle_bool
 fi
 
-# # 从env中选取testnet或mainnet，以及写入当前日期到env.txt
-# env=$(sed -n '1p' env.txt)
-# start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
-# sed -i "2s/.*/$start_date/" env.txt
+# 从env中选取testnet或mainnet，以及写入当前日期到env.txt
+env=$(sed -n '1p' env.txt)
+start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
+sed -i "2s/.*/$start_date/" env.txt
 
-# ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases/latest | jq -r '.tag_name')
-# tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
+ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases/latest | jq -r '.tag_name')
+tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
 
-# if [ ! -f "$tar_name" ]; then
-#     wget "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
-# fi
+if [ ! -f "$tar_name" ]; then
+    wget "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
+fi
 
-# # sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
-# # tar xzvf ${tar_name}
-# cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
+# sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
+# tar xzvf ${tar_name}
+cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
-# killckb
+killckb
 
 # # 初始化节点
 # ./ckb --version >../result_${start_date}.log
@@ -91,7 +91,7 @@ fi
 # echo "$config_content" >>ckb.toml
 # tail -n 8 ckb.toml
 
-# # 启动节点
-# sudo nohup ./ckb run >/dev/null 2>&1 &
-# sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-# echo "sync_start: ${sync_start}" >>../result_${start_date}.log
+# 启动节点
+sudo nohup ./ckb run >/dev/null 2>&1 &
+sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
+echo "sync_start: ${sync_start}" >>../result_${start_date}.log
