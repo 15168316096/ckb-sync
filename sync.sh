@@ -62,34 +62,34 @@ cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
 killckb
 
-# # 初始化节点
-# ./ckb --version >../result_${start_date}.log
-# ./ckb init --chain ${env}
-# echo "------------------------------------------------------------"
-# grep 'spec =' ckb.toml >>../result_${start_date}.log
+# 初始化节点
+./ckb --version >../result_${start_date}.log
+sudo ./ckb init --chain ${env} --force
+echo "------------------------------------------------------------"
+grep 'spec =' ckb.toml >>../result_${start_date}.log
 
-# # 修改ckb.toml
-# grep "^listen_address =" ckb.toml
-# new_listen_address="0.0.0.0:8114"
-# sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.toml
-# grep "^listen_address =" ckb.toml
+# 修改ckb.toml
+grep "^listen_address =" ckb.toml
+new_listen_address="0.0.0.0:8114"
+sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.toml
+grep "^listen_address =" ckb.toml
 
-# grep "^modules =" ckb.toml
-# new_module="\"Indexer\""
-# sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
-# grep "^modules =" ckb.toml
+grep "^modules =" ckb.toml
+new_module="\"Indexer\""
+sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
+grep "^modules =" ckb.toml
 
-# config_content="
-# [metrics.exporter.prometheus]
-# target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
+config_content="
+[metrics.exporter.prometheus]
+target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
 
-# # # Experimental: Monitor memory changes.
-# [memory_tracker]
-# # # Seconds between checking the process, 0 is disable, default is 0.
-# interval = 5
-# "
-# echo "$config_content" >>ckb.toml
-# tail -n 8 ckb.toml
+# # Experimental: Monitor memory changes.
+[memory_tracker]
+# # Seconds between checking the process, 0 is disable, default is 0.
+interval = 5
+"
+echo "$config_content" >>ckb.toml
+tail -n 8 ckb.toml
 
 # 启动节点
 sudo nohup ./ckb run >/dev/null 2>&1 &
