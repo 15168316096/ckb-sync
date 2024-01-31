@@ -1,50 +1,48 @@
 #!/bin/bash
 
-echo "666"
+# 定义函数
+killckb() {
+    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    for i in $PROCESS; do
+        echo "killed the ckb $i"
+        sudo kill -9 $i
+    done
+}
 
-# # 定义函数
-# killckb() {
-#     PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
-#     for i in $PROCESS; do
-#         echo "killed the ckb $i"
-#         sudo kill -9 $i
-#     done
-# }
+toggle_bool() {
+    # 获取 env.txt 文件的第三行
+    local third_line=$(sed -n '3p' env.txt)
 
-# toggle_bool() {
-#     # 获取 env.txt 文件的第三行
-#     local third_line=$(sed -n '3p' env.txt)
+    if [ "$third_line" = "1" ]; then
+        # 如果第三行是 1，则替换为 0
+        sed -i "3s/.*/0/" env.txt
+    elif [ "$third_line" = "0" ]; then
+        # 如果第三行是 0，则替换为 1
+        sed -i "3s/.*/1/" env.txt
+    else
+        echo "第三行既不是1也不是0，未做任何更改"
+    fi
+}
 
-#     if [ "$third_line" = "1" ]; then
-#         # 如果第三行是 1，则替换为 0
-#         sed -i "3s/.*/0/" env.txt
-#     elif [ "$third_line" = "0" ]; then
-#         # 如果第三行是 0，则替换为 1
-#         sed -i "3s/.*/1/" env.txt
-#     else
-#         echo "第三行既不是1也不是0，未做任何更改"
-#     fi
-# }
+if [ ! -f "env.txt" ]; then
+    echo "env.txt，使用默认环境'mainnet'"
+    echo "mainnet" >env.txt
+    echo "2024-01-01" >>env.txt
+    echo "1" >>env.txt
+fi
 
-# if [ ! -f "env.txt" ]; then
-#     echo "env.txt，使用默认环境'mainnet'"
-#     echo "mainnet" >env.txt
-#     echo "2024-01-01" >>env.txt
-#     echo "1" >>env.txt
-# fi
-
-# # 判断当天是否需要执行
-# third_line=$(sed -n '3p' env.txt)
-# if [ "$third_line" = "0" ]; then
-#     # 如果第三行是 0，则打印信息并退出
-#     echo "无需执行"
-#     toggle_bool
-#     exit 0
-# else
-#     # 如果第三行是 1，则打印信息并继续执行
-#     echo "开始执行"
-#     toggle_bool
-# fi
+# 判断当天是否需要执行
+third_line=$(sed -n '3p' env.txt)
+if [ "$third_line" = "0" ]; then
+    # 如果第三行是 0，则打印信息并退出
+    echo "无需执行"
+    toggle_bool
+    exit 0
+else
+    # 如果第三行是 1，则打印信息并继续执行
+    echo "开始执行"
+    toggle_bool
+fi
 
 # # 从env中选取testnet或mainnet，以及写入当前日期到env.txt
 # env=$(sed -n '1p' env.txt)
