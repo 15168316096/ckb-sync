@@ -49,6 +49,7 @@ env=$(sed -n '1p' env.txt)
 start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 sed -i "2s/.*/$start_date/" env.txt
 
+#拉取、解压ckb tar包
 ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases/latest | jq -r '.tag_name')
 tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
 
