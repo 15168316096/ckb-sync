@@ -58,6 +58,7 @@ fi
 
 sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
 tar xzvf ${tar_name}
+rm -f ${tar_name}
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
 killckb
