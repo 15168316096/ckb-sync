@@ -68,6 +68,7 @@ killckb
 ./ckb --version >../result_${start_date}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
+grep 'spec =' ckb.toml
 grep 'spec =' ckb.toml >>../result_${start_date}.log
 
 # 修改ckb.toml
