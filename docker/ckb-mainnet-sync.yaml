@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ckb-mainnet-sync
+spec:
+  serviceName: ckb-mainnet-sync
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ckb-mainnet-sync
+  template:
+    metadata:
+      labels:
+        app: ckb-mainnet-sync
+    spec:
+      securityContext:
+        runAsUser: 0
+        fsGroup: 0
+      containers:
+        - name: ckb-mainnet-sync
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-g5f1859a71
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 8114
+              name: rpc
+            - containerPort: 8100
+              name: monitor
+          command: ["bash", "-c", "set -ex; cd /var/lib/ckb; ckb init --chain mainnet; ckb migrate --force; ckb run --indexer"]
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/ckb
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Gi
