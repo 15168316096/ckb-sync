@@ -18,7 +18,7 @@ spec:
         fsGroup: 0
       containers:
         - name: ckb-mainnet-sync
-          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-g5f1859a71
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/async-2024-02-02-g6ccec7be9
           securityContext:
             privileged: true
           ports:
@@ -26,7 +26,7 @@ spec:
               name: rpc
             - containerPort: 8100
               name: monitor
-          command: ["bash", "-c", "set -ex; cd /var/lib/ckb; ckb init --chain mainnet; ckb migrate --force; ckb run --indexer"]
+          command: ["bash", "-c", "set -ex; cd /var/lib/ckb; ckb init --chain mainnet --force; ckb migrate --force; ckb run --indexer"]
           volumeMounts:
             - name: data
               mountPath: /var/lib/ckb
