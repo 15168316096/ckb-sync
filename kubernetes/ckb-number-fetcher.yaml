@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ckb-number-fetcher
+spec:
+  serviceName: "ckb-number-fetcher"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ckb-number-fetcher
+  template:
+    metadata:
+      labels:
+        app: ckb-number-fetcher
+    spec:
+      containers:
+      - name: number-fetcher
+        image: registry.cn-hangzhou.aliyuncs.com/scz996/network-tools:latest
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - >
+          while true; do
+            for i in 0 1 2; do
+              curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://ckb-mainnet-sync-$i.ckb-mainnet-sync-service:8114 | jq -r '.result.number' | sed 's/^0x//'
+            done
+            sleep 600 # 每隔10分钟执行一次
+          done

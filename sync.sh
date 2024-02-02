@@ -50,7 +50,7 @@ start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 sed -i "2s/.*/$start_date/" env.txt
 
 #拉取、解压ckb tar包
-ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases/latest | jq -r '.tag_name')
+ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq -r '.[] | select(.tag_name | startswith("v0.114")) | .tag_name' | sort -V | tail -n 1)
 tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
 
 if [ ! -f "$tar_name" ]; then
