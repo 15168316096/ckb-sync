@@ -10,5 +10,5 @@ RUN apk add --no-cache bash curl jq iputils
 # 设置工作目录
 WORKDIR /app
 
-# 设置默认命令
-CMD ["/bin/bash"]
+# 使用一个持续运行的命令来保持容器活跃
+CMD ["sh", "-c", "trap : TERM INT; sleep infinity & wait"]
