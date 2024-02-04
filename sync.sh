@@ -69,7 +69,7 @@ killckb
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
 grep 'spec =' ckb.toml
-grep 'spec =' ckb.toml >>../result_${start_date}.log
+grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_date}.log
 
 # 修改ckb.toml
 grep "^listen_address =" ckb.toml
