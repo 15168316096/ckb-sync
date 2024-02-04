@@ -54,7 +54,7 @@ ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | 
 tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
 
 if [ ! -f "$tar_name" ]; then
-    wget "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
+    wget -q "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
 fi
 
 sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
