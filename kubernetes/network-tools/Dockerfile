@@ -1,9 +1,9 @@
 # 使用Alpine Linux作为基础镜像
 FROM alpine:latest
 
-# 更新软件包仓库索引并安装bash、curl、jq、iputils（包含ping）和tzdata
+# 更新软件包仓库索引并安装下面的工具
 RUN apk update && \
-    apk add --no-cache bash curl jq iputils tzdata
+    apk add --no-cache bash curl jq iputils tzdata dcron vim
 
 # 设置工作目录
 WORKDIR /app
