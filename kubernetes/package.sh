@@ -20,6 +20,13 @@ docker images --format '{{.Repository}}:{{.Tag}}' | grep '^registry.cn-hangzhou.
     docker rmi "$image"
 done
 
+# https://github.com/eval-exec/ckb/tree/exec/async
+# 做ckb镜像
+git clone https://github.com/eval-exec/ckb.git
+cd ckb
+git checkout exec/async
+make docker
+
 # 提取镜像名称和标签
 ckb_image=$(docker images --format '{{.Repository}}:{{.Tag}}\t{{.CreatedAt}}' | grep '^nervos/ckb:' | sort -k 2 -r | head -n 1 | cut -f1)
 echo $ckb_image
@@ -36,14 +43,7 @@ RUN apt-get update && apt-get install -y \\
 EOF
 
 cat Dockerfile
-
-# https://github.com/eval-exec/ckb/tree/exec/async
-# 做镜像
-git clone https://github.com/eval-exec/ckb.git
-cd ckb
-git checkout exec/async
-make docker
-
+# 做我用的镜像
 commit_version=$(git log -n 1 --pretty=format:"%h")
 date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 sudo docker build -t ckb:async-${date}-${commit_version} .
