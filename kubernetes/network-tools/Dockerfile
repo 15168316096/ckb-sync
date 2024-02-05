@@ -2,8 +2,7 @@
 FROM alpine:latest
 
 # 更新软件包仓库索引并安装下面的工具
-RUN apk update && \
-    apk add --no-cache bash curl jq iputils tzdata
+RUN apk update && apk add --no-cache bash curl jq iputils tzdata
 
 # 设置工作目录
 WORKDIR /app

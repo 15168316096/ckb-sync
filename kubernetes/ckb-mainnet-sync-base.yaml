@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: ckb-mainnet-sync
+  name: ckb-mainnet-sync-base
 spec:
-  serviceName: ckb-mainnet-sync
-  replicas: 3
+  serviceName:  ckb-mainnet-sync-base
+  replicas: 1
   selector:
     matchLabels:
-      app: ckb-mainnet-sync
+      app: ckb-mainnet-sync-base
   template:
     metadata:
       labels:
-        app: ckb-mainnet-sync
+        app: ckb-mainnet-sync-base
     spec:
       securityContext:
         runAsUser: 0
         fsGroup: 0
       containers:
-        - name: ckb-mainnet-sync
-          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-2024-02-02-g6ccec7be9
+        - name: ckb-mainnet-sync-base
+          image: nervos/ckb:v0.114.0-rc1
           securityContext:
             privileged: true
           ports:

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ckb-number-fetcher
+spec:
+  serviceName: "ckb-number-fetcher"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ckb-number-fetcher
+  template:
+    metadata:
+      labels:
+        app: ckb-number-fetcher
+    spec:
+      containers:
+        - name: ckb-number-fetcher
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/network-tools:latest
+          command: ["/bin/bash"]
+          args:
+            - -c
+            - |
+              num=4
+              while true; do
+                latest_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://mainnet.ckbapp.dev | jq -r '.result.number' | sed 's/^0x//')
+                if [[ $? -ne 0 || -z "$latest_hex_number" ]]; then
+                  latest_number="获取失败"
+                else
+                 latest_number=$((16#$latest_hex_number))
+                fi
+                
+                for i in $(seq 0 $((num - 1))); do
+                  if [[ $i -eq 3 ]]; then
+                    hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://ckb-mainnet-sync-base-0.ckb-mainnet-sync-base-service.ckb-mainnet-sync.svc:8114 | jq -r '.result.number' | sed 's/^0x//')
+                  else
+                    hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://ckb-mainnet-sync-$i.ckb-mainnet-sync-service.ckb-mainnet-sync.svc:8114 | jq -r '.result.number' | sed 's/^0x//')
+                  fi
+                  
+                  if [[ $? -ne 0 || -z "$hex_number" ]]; then
+                    numbers[$i]="获取失败"
+                  else
+                    numbers[$i]=$((16#$hex_number))
+                  fi
+
+                  # 计算同步率或指出无法计算
+                  if [[ $latest_number =~ ^[0-9]+$ && ${numbers[$i]} =~ ^[0-9]+$ ]]; then
+                      sync_rates[$i]=$(echo "scale=10; ${numbers[$i]} * 100 / $latest_number" | bc | awk '{printf "%.2f\n", $0}')
+                      sync_rates[$i]="${sync_rates[$i]}%"
+                  else
+                      sync_rates[$i]="无法计算"
+                  fi
+                done
+                echo "$(date "+%Y-%m-%d %H:%M:%S") ${latest_number} ${numbers[*]} ${sync_rates[*]}"
+                sleep 600 # 每隔10分钟执行一次
+              done
