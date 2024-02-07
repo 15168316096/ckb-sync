@@ -26,7 +26,16 @@ spec:
               name: rpc
             - containerPort: 8100
               name: monitor
-          command: ["bash", "-c", "set -ex; cd /var/lib/ckb; ckb init --chain mainnet --force; ckb migrate --force; ckb run --indexer"]
+          command:
+            - bash
+            - -c
+            - |
+              set -ex
+              cd /var/lib/ckb
+              ckb init --chain mainnet --force
+              sed -i 's/filter = "info"/filter = "info,ckb=debug"/' ckb.toml
+              ckb migrate --force
+              ckb run --indexer
           volumeMounts:
             - name: data
               mountPath: /var/lib/ckb
