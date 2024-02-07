@@ -10,17 +10,29 @@ killckb() {
 }
 
 toggle_bool() {
-    # 获取 env.txt 文件的第三行
+    # 获取 env.txt 文件的第一行和第三行
+    local first_line=$(sed -n '1p' env.txt)
     local third_line=$(sed -n '3p' env.txt)
 
-    if [ "$third_line" = "1" ]; then
-        # 如果第三行是 1，则替换为 0
-        sed -i "3s/.*/0/" env.txt
-    elif [ "$third_line" = "0" ]; then
-        # 如果第三行是 0，则替换为 1
-        sed -i "3s/.*/1/" env.txt
-    else
-        echo "第三行既不是1也不是0，未做任何更改"
+    if [ "$first_line" = "testnet" ]; then
+        # 如果第一行是 testnet
+        if [ "$third_line" = "3" ]; then
+            # 如果第三行是 3，则替换为 0
+            sed -i "3s/.*/0/" env.txt
+        else
+            # 第三行加 1
+            local new_value=$((third_line + 1))
+            sed -i "3s/.*/$new_value/" env.txt
+        fi
+    elif [ "$first_line" = "mainnet" ]; then
+        # 如果第一行是 mainnet，保留原来的逻辑
+        if [ "$third_line" = "1" ]; then
+            # 如果第三行是 1，则替换为 0
+            sed -i "3s/.*/0/" env.txt
+        elif [ "$third_line" = "0" ]; then
+            # 如果第三行是 0，则替换为 1
+            sed -i "3s/.*/1/" env.txt
+        fi
     fi
 }
 
@@ -33,9 +45,9 @@ fi
 
 # 判断当天是否需要执行
 third_line=$(sed -n '3p' env.txt)
-if [ "$third_line" = "0" ]; then
-    # 如果第三行是 0，则打印信息并退出
-    echo "无需执行"
+if [ "$third_line" != "1" ]; then
+    # 如果第三行不是 1，则打印信息并退出
+    echo "无需执行 third_line:$third_line"
     toggle_bool
     exit 0
 else
