@@ -30,7 +30,7 @@ toggle_bool() {
             # 如果第三行是 1，则替换为 0
             sed -i "3s/.*/0/" env.txt
         elif [ "$third_line" = "0" ]; then
-            # 如果第三行是 0，则替换为 1
+            # 只要第三行不是 1，就置为 1
             sed -i "3s/.*/1/" env.txt
         fi
     fi
