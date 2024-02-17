@@ -16,8 +16,8 @@ toggle_bool() {
 
     if [ "$first_line" = "testnet" ]; then
         # 如果第一行是 testnet
-        if [ "$third_line" = "3" ]; then
-            # 如果第三行是 3，则替换为 0
+        if [ "$third_line" = "4" ]; then
+            # 如果第三行是 4，则替换为 0
             sed -i "3s/.*/0/" env.txt
         else
             # 第三行加 1

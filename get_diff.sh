@@ -100,8 +100,8 @@ if grep -q "sync_end" result_${start_date}.log && ! grep -q "kill_time" result_$
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    # 检查时间差是否超过6小时 (6小时 = 21600秒)
-    if [[ $time_diff -gt 21600 ]]; then
+    # 检查时间差是否超过8小时 (8小时 = 28800秒)
+    if [[ $time_diff -gt 28800 ]]; then
         # 调用killckb函数并记录kill_time
         killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")" >>result_${start_date}.log
