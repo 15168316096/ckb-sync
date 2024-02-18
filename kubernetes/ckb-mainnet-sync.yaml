@@ -33,6 +33,7 @@ spec:
               set -ex
               cd /var/lib/ckb
               ckb init --chain mainnet --force
+              # sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
               ckb migrate --force
               ckb run --indexer
           volumeMounts:
