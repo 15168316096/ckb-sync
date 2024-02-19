@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: ckb-mainnet-sync-base
+  name: ckb-mainnet-sync-normal
 spec:
-  serviceName:  ckb-mainnet-sync-base
+  serviceName: ckb-mainnet-sync-normal-service
   replicas: 1
   selector:
     matchLabels:
-      app: ckb-mainnet-sync-base
+      app: ckb-mainnet-sync-normal
   template:
     metadata:
       labels:
-        app: ckb-mainnet-sync-base
+        app: ckb-mainnet-sync-normal
     spec:
       securityContext:
         runAsUser: 0
         fsGroup: 0
       containers:
-        - name: ckb-mainnet-sync-base
-          image: nervos/ckb:v0.114.0-rc1
+        - name: ckb-mainnet-sync-normal
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-2024-02-09-ebf6c3c05
           securityContext:
             privileged: true
           ports:
@@ -33,7 +33,7 @@ spec:
               set -ex
               cd /var/lib/ckb
               ckb init --chain mainnet --force
-              sed -i 's/filter = "info"/filter = "info,ckb=debug"/' ckb.toml
+              # sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
               ckb migrate --force
               ckb run --indexer
           volumeMounts:
@@ -53,4 +53,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 100Gi
+            storage: 200Gi

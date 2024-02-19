@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ckb-mainnet-sync-normal-service
+  labels:
+    app: ckb-mainnet-sync-normal
+spec:
+  ports:
+    - name: rpc
+      port: 8114
+      targetPort: 8114
+    - name: monitor
+      port: 8100
+      targetPort: 8100
+  selector:
+    app: ckb-mainnet-sync-normal

@@ -9,33 +9,6 @@ killckb() {
     done
 }
 
-toggle_bool() {
-    # 获取 env.txt 文件的第一行和第三行
-    local first_line=$(sed -n '1p' env.txt)
-    local third_line=$(sed -n '3p' env.txt)
-
-    if [ "$first_line" = "testnet" ]; then
-        # 如果第一行是 testnet
-        if [ "$third_line" = "4" ]; then
-            # 如果第三行是 4，则替换为 0
-            sed -i "3s/.*/0/" env.txt
-        else
-            # 第三行加 1
-            local new_value=$((third_line + 1))
-            sed -i "3s/.*/$new_value/" env.txt
-        fi
-    elif [ "$first_line" = "mainnet" ]; then
-        # 如果第一行是 mainnet，保留原来的逻辑
-        if [ "$third_line" = "1" ]; then
-            # 如果第三行是 1，则替换为 0
-            sed -i "3s/.*/0/" env.txt
-        elif [ "$third_line" = "0" ]; then
-            # 只要第三行不是 1，就置为 1
-            sed -i "3s/.*/1/" env.txt
-        fi
-    fi
-}
-
 if [ ! -f "env.txt" ]; then
     echo "env.txt，使用默认环境'mainnet'"
     echo "mainnet" >env.txt
@@ -43,23 +16,27 @@ if [ ! -f "env.txt" ]; then
     echo "1" >>env.txt
 fi
 
+day=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
+
 # 判断当天是否需要执行
 third_line=$(sed -n '3p' env.txt)
 if [ "$third_line" != "1" ]; then
-    # 如果第三行不是 1，则打印信息并退出
-    echo "无需执行 third_line:$third_line"
-    toggle_bool
+    # 如果第三行不是 1，则打印信息、重启ckb、退出
+    echo "$day 无需执行仅重启"
+    killckb
+    sleep 1200
+    cd ckb_*_x86_64-unknown-linux-gnu
+    sudo nohup ./ckb run >/dev/null 2>&1 &
     exit 0
 else
     # 如果第三行是 1，则打印信息并继续执行
     echo "开始执行"
-    toggle_bool
 fi
 
 # 从env中选取testnet或mainnet，以及写入当前日期到env.txt
 env=$(sed -n '1p' env.txt)
-start_date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
-sed -i "2s/.*/$start_date/" env.txt
+start_day=$day
+sed -i "2s/.*/$start_day/" env.txt
 
 #拉取、解压ckb tar包
 ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq -r '.[] | select(.tag_name | startswith("v0.114")) | .tag_name' | sort -V | tail -n 1)
@@ -77,11 +54,11 @@ cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 killckb
 
 # 初始化节点
-./ckb --version >../result_${start_date}.log
+./ckb --version >../result_${start_day}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
 grep 'spec =' ckb.toml
-grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_date}.log
+grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_day}.log
 
 # 修改ckb.toml
 grep "^listen_address =" ckb.toml
@@ -109,4 +86,11 @@ tail -n 8 ckb.toml
 # 启动节点
 sudo nohup ./ckb run >/dev/null 2>&1 &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-echo "sync_start: ${sync_start}" >>../result_${start_date}.log
+echo "sync_start: ${sync_start}" >>../result_${start_day}.log
+
+# 次日不再启动ckb
+cd ..
+if [ "$third_line" = "1" ]; then
+    # 如果第三行是 1，则替换为 0
+    sed -i "3s/.*/0/" env.txt
+fi
