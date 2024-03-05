@@ -18,7 +18,7 @@ spec:
         fsGroup: 0
       containers:
         - name: ckb-mainnet-sync-normal
-          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:aasync-2024-03-05-ba2451154
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-2024-03-05-ba2451154
           securityContext:
             privileged: true
           ports:
