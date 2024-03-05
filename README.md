@@ -1,12 +1,17 @@
-## 用法
+## Usage
 ```bash
-# 有8小时时差 每天9点半启动
+# There is an 8-hour time difference. The task starts at 9:30 AM every day.
 30 1 * * * cd /home/ckb/scz/ckb-sync && sudo bash sync.sh >> sync.log 2>&1
-# 每小时的10分、40分统计一次
+# Statistics are collected at 10 and 40 minutes past every hour.
 10,40 * * * * cd /home/ckb/scz/ckb-sync && sudo bash get_diff.sh
 ```
-## 说明
-同步测试的服务器上需要先安装python3以及discord包
+## Instructions
+Python3 and packages such as discord and python-dotenv need to be installed on the server for testing synchronization.
 ```bash
-pip install discord
+sudo pip install discord python-dotenv
+```
+Please configure the .env file for sending test reports.
+```dotenv
+DISCORD_CHANNEL_ID=YOUR_DISCORD_CHANNEL_ID
+DISCORD_TOKEN=YOUR_DISCORD_TOKEN
 ```
