@@ -18,7 +18,7 @@ spec:
         fsGroup: 0
       containers:
         - name: ckb-mainnet-sync-normal
-          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-2024-02-09-ebf6c3c05
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:aasync-2024-03-05-ba2451154
           securityContext:
             privileged: true
           ports:
@@ -33,9 +33,22 @@ spec:
               set -ex
               cd /var/lib/ckb
               ckb init --chain mainnet --force
+              
+              config_content="
+              [metrics.exporter.prometheus]
+              target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
+              
+              # # Experimental: Monitor memory changes.
+              [memory_tracker]
+              # # Seconds between checking the process, 0 is disable, default is 0.
+              interval = 5
+              "
+              echo "$config_content" >>ckb.toml
+              
               # sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
+              
               ckb migrate --force
-              ckb run --indexer
+              ckb run --rich-indexer
           volumeMounts:
             - name: data
               mountPath: /var/lib/ckb
