@@ -35,7 +35,7 @@ fi
 
 echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} ${env}_number: ${number} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_day}.log
 
-# 检查sync_end是否存在，并且差值小于总高度的1%
+# 检查sync_end是否存在，并且差值小于100
 if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 12000 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
     echo "sync_end: ${sync_end}（当前高度：$localhost_number）" >>result_${start_day}.log
@@ -105,21 +105,10 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    # ckb停10分钟后再启动
-    if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
-        killckb
-        sleep 600
-        cd ckb_*_x86_64-unknown-linux-gnu
-        sudo nohup ./ckb run >/dev/null 2>&1 &
-    fi
 
-    # 检查时间差是否超过8小时 (8小时 = 28800秒)
-    if [[ $time_diff -gt 28800 ]]; then
-        # 调用killckb函数并记录kill_time
-        killckb
-        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
-        echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
-        python3 sendMsg.py result_${start_day}.log
-        toggle_env
-    fi
+    killckb
+    echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
+    echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
+    python3 sendMsg.py result_${start_day}.log
+    toggle_env
 fi
