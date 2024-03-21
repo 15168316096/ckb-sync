@@ -17,12 +17,13 @@ if [ ! -f "env.txt" ]; then
 fi
 
 day=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
+current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 
 # 判断当前是否需要执行
 third_line=$(sed -n '3p' env.txt)
 if [ "$third_line" != "1" ]; then
     # 如果第三行不是 1，则打印信息、重启ckb、退出
-    echo "$day 无需执行仅重启"
+    echo "$current_time 无需执行仅重启"
     killckb
     sleep 300
     cd ckb_*_x86_64-unknown-linux-gnu
@@ -30,7 +31,7 @@ if [ "$third_line" != "1" ]; then
     exit 0
 else
     # 如果第三行是 1，则打印信息并继续执行
-    echo "开始执行"
+    echo "$current_time 开始执行"
 fi
 
 # 从env中选取testnet或mainnet，以及写入当前日期到env.txt
