@@ -8,6 +8,9 @@
 ## Instructions
 Python3 and packages such as discord and python-dotenv need to be installed on the server for testing synchronization.
 ```bash
+sudo apt-get install jq python3-pip -y
+```
+```bash
 sudo pip install discord python-dotenv
 ```
 Please configure the .env file for sending test reports.
