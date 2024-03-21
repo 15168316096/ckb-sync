@@ -20,7 +20,7 @@ if [ $# -eq 0 ]; then
 else
     version_prefix="v0.$1"
     ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq --arg vprefix "$version_prefix" -r '.[] | select(.tag_name | startswith($vprefix)) | .tag_name' | sort -V | tail -n 1)
-    echo "CKB版本号为：$1"
+    echo "CKB版本号为：$ckb_version"
 fi
 
 # 从env中选取testnet或mainnet，以及写入当前日期到env.txt
