@@ -105,10 +105,10 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    # ckb停10分钟后再启动
+    # ckb停20分钟后再启动
     if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
         killckb
-        sleep 600
+        sleep 1200
         cd ckb_*_x86_64-unknown-linux-gnu
         sudo nohup ./ckb run >/dev/null 2>&1 &
     fi

@@ -18,13 +18,13 @@ fi
 
 day=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 
-# 判断当天是否需要执行
+# 判断当前是否需要执行
 third_line=$(sed -n '3p' env.txt)
 if [ "$third_line" != "1" ]; then
     # 如果第三行不是 1，则打印信息、重启ckb、退出
     echo "$day 无需执行仅重启"
     killckb
-    sleep 1200
+    sleep 300
     cd ckb_*_x86_64-unknown-linux-gnu
     sudo nohup ./ckb run >/dev/null 2>&1 &
     exit 0
@@ -88,7 +88,7 @@ sudo nohup ./ckb run >/dev/null 2>&1 &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 
-# 次日不再启动ckb
+# 下次执行不再拉包启动ckb
 cd ..
 if [ "$third_line" = "1" ]; then
     # 如果第三行是 1，则替换为 0
