@@ -17,6 +17,7 @@ fi
 
 if [ $# -eq 0 ]; then
     echo "请输入CKB版本号，如：bash sync_without_restart.sh 115"
+    exit 1
 else
     version_prefix="v0.$1"
     ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq --arg vprefix "$version_prefix" -r '.[] | select(.tag_name | startswith($vprefix)) | .tag_name' | sort -V | tail -n 1)
