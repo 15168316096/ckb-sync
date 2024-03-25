@@ -57,8 +57,8 @@ sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.to
 grep "^listen_address =" ckb.toml
 
 grep "^modules =" ckb.toml
-new_module="\"Indexer\""
-sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
+# new_module="\"Indexer\""
+# sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
 grep "^modules =" ckb.toml
 
 config_content="
@@ -74,6 +74,6 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-sudo nohup ./ckb run >/dev/null 2>&1 &
+sudo nohup ./ckb run --rich-indexer >/dev/null 2>&1 &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
