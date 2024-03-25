@@ -45,6 +45,7 @@ cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 killckb
 
 # 初始化节点
+rm -f ../result_${start_day}.log
 ./ckb --version >../result_${start_day}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
