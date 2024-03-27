@@ -20,11 +20,11 @@ docker images --format '{{.Repository}}:{{.Tag}}' | grep '^registry.cn-hangzhou.
     docker rmi "$image"
 done
 
-# https://github.com/eval-exec/ckb/tree/exec/async
+# https://github.com/nervosnetwork/ckb/tree/ckb-async-download
 # 做ckb镜像
-git clone https://github.com/eval-exec/ckb.git
+git clone https://github.com/nervosnetwork/ckb.git
 cd ckb
-git checkout exec/async
+git checkout ckb-async-download
 make docker
 
 # 提取镜像名称和标签
@@ -47,11 +47,11 @@ cat Dockerfile
 # 做我用的镜像
 commit_version=$(git log -n 1 --pretty=format:"%h")
 date=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
-sudo docker build -t ckb:async-${date}-${commit_version} .
+sudo docker build -t ckb:async-download-${date}-${commit_version} .
 
 # 上传镜像
 export DOCKER_PASSWORD=CkbSync02
 echo $DOCKER_PASSWORD | docker login --username 肥宅小竹 --password-stdin registry.cn-hangzhou.aliyuncs.com
-image_id=$(docker images | grep "ckb.*async-${date}-${commit_version}" | awk '{print $3}')
-docker tag $image_id registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-${date}-${commit_version}
-docker push registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-${date}-${commit_version}
+image_id=$(docker images | grep "ckb.*async-download-${date}-${commit_version}" | awk '{print $3}')
+docker tag $image_id registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-download-${date}-${commit_version}
+docker push registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-download-${date}-${commit_version}
