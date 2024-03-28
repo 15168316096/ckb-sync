@@ -44,11 +44,9 @@ spec:
               interval = 5
               "
               echo "$config_content" >>ckb.toml
-              
-              # sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
-              
+                            
               ckb migrate --force
-              ckb run --rich-indexer
+              ckb run --indexer
           volumeMounts:
             - name: data
               mountPath: /var/lib/ckb

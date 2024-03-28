@@ -33,6 +33,18 @@ spec:
               set -ex
               cd /var/lib/ckb
               ckb init --chain mainnet --force
+              
+              config_content="
+              [metrics.exporter.prometheus]
+              target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
+              
+              # # Experimental: Monitor memory changes.
+              [memory_tracker]
+              # # Seconds between checking the process, 0 is disable, default is 0.
+              interval = 5
+              "
+              echo "$config_content" >>ckb.toml
+              
               ckb migrate --force
               ckb run --indexer
           volumeMounts:
