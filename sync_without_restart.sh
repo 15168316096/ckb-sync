@@ -19,7 +19,11 @@ if [ $# -eq 0 ]; then
     echo "请输入CKB版本号，如：bash sync_without_restart.sh 115"
     exit 1
 else
-    version_prefix="v0.$1"
+    if [[ "$1" == "async" ]]; then
+        version_prefix="v0.115" # 当第一个参数是async时，设置默认版本号
+    else
+        version_prefix="v0.$1"
+    fi
     ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq --arg vprefix "$version_prefix" -r '.[] | select(.tag_name | startswith($vprefix)) | .tag_name' | sort -V | tail -n 1)
     echo "CKB版本号为：$ckb_version"
 fi
@@ -35,6 +39,12 @@ tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
 
 if [ ! -f "$tar_name" ]; then
     wget -q "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
+    # 如果第一个参数是async，则替换ckb二进制文件
+    if [[ "$1" == "async" ]]; then
+        echo "替换ckb二进制文件为async版本"
+        tar -xzf ${tar_name} --directory=./ --strip-components=1
+        sudo cp -f ckb-async-download/ckb ckb_${ckb_version}_x86_64-unknown-linux-gnu/ckb
+    fi
 fi
 
 sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
