@@ -47,7 +47,6 @@ rm -f ${tar_name}
 # 如果第一个参数是async，则替换ckb二进制文件
 if [[ "$1" == "async" ]]; then
     echo "替换ckb二进制文件为async版本"
-    tar -xzf ${tar_name} --directory=./ --strip-components=1
     sudo cp -f ckb-async-download/ckb ckb_${ckb_version}_x86_64-unknown-linux-gnu/ckb
 fi
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
