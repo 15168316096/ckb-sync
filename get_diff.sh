@@ -114,7 +114,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     fi
 
     # 检查时间差是否超过8小时 (8小时 = 28800秒)
-    if [[ $time_diff -gt 28800 ]]; then
+    if [[ $time_diff -ge 28800 ]]; then
         # 调用killckb函数并记录kill_time
         killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
