@@ -18,7 +18,7 @@ spec:
         fsGroup: 0
       containers:
         - name: ckb-mainnet-sync-base
-          image: nervos/ckb:v0.115.0-rc2
+          image: nervos/ckb:v0.115.0
           securityContext:
             privileged: true
           ports:
