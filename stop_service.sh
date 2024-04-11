@@ -18,6 +18,7 @@ function kill9_ckb() {
 
 function pkill_ckb() {
     sudo pkill ckb
+    echo "pkilled the ckb"
 }
 
 function stop_service() {
