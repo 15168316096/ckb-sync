@@ -18,7 +18,7 @@ spec:
         fsGroup: 0
       containers:
         - name: ckb-mainnet-sync-normal
-          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-2024-03-05-ba2451154
+          image: registry.cn-hangzhou.aliyuncs.com/scz996/ckb:async-download-2024-04-07-5c2a089ac
           securityContext:
             privileged: true
           ports:
@@ -44,11 +44,9 @@ spec:
               interval = 5
               "
               echo "$config_content" >>ckb.toml
-              
-              # sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
-              
+                            
               ckb migrate --force
-              ckb run --rich-indexer
+              ckb run --indexer
           volumeMounts:
             - name: data
               mountPath: /var/lib/ckb
@@ -57,8 +55,8 @@ spec:
               cpu: "500m"
               memory: "1Gi"
             limits:
-              cpu: "1"
-              memory: "2Gi"
+              cpu: "2"
+              memory: "4Gi"
   volumeClaimTemplates:
     - metadata:
         name: data

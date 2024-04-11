@@ -35,7 +35,7 @@ fi
 
 echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} ${env}_number: ${number} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_day}.log
 
-# 检查sync_end是否存在，并且差值小于100
+# 检查sync_end是否存在，并且差值小于总高度的1%
 if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 12000 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
     echo "sync_end: ${sync_end}（当前高度：$localhost_number）" >>result_${start_day}.log
@@ -59,6 +59,7 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 fi
 
+
 toggle_env() {
     # 获取 env.txt 文件的第一行和第三行
     local first_line=$(head -n 1 env.txt)
@@ -76,6 +77,7 @@ toggle_env() {
 
     # 第三行置为 1
     sed -i "3s/.*/1/" env.txt
+
 }
 
 # 检查是否存在sync_end且不存在kill_time
@@ -96,9 +98,19 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     sync_start_timestamp_utc=$(date -u -d "$sync_start_time" +%s)
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
+
     ./stop_service pkill
     echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
     echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
     python3 sendMsg.py result_${start_day}.log
     toggle_env
+
+    # 检查时间差是否超过4小时 (4小时 = 28800秒)
+    if [[ $time_diff -ge 14400 ]]; then
+        ./stop_service pkill
+        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
+        source .env
+        echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
+        python3 sendMsg.py result_${start_day}.log
+    fi
 fi

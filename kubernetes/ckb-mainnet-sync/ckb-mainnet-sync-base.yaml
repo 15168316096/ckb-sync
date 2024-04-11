@@ -18,7 +18,7 @@ spec:
         fsGroup: 0
       containers:
         - name: ckb-mainnet-sync-base
-          image: nervos/ckb:v0.114.0-rc1
+          image: nervos/ckb:v0.115.0
           securityContext:
             privileged: true
           ports:
@@ -33,6 +33,18 @@ spec:
               set -ex
               cd /var/lib/ckb
               ckb init --chain mainnet --force
+              
+              config_content="
+              [metrics.exporter.prometheus]
+              target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
+              
+              # # Experimental: Monitor memory changes.
+              [memory_tracker]
+              # # Seconds between checking the process, 0 is disable, default is 0.
+              interval = 5
+              "
+              echo "$config_content" >>ckb.toml
+              
               ckb migrate --force
               ckb run --indexer
           volumeMounts:
@@ -43,8 +55,8 @@ spec:
               cpu: "500m"
               memory: "1Gi"
             limits:
-              cpu: "1"
-              memory: "2Gi"
+              cpu: "2"
+              memory: "4Gi"
   volumeClaimTemplates:
     - metadata:
         name: data
