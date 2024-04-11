@@ -59,13 +59,64 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 fi
 
-killckb() {
+
+function kill_ckb() {
+    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    for i in $PROCESS; do
+        echo "killed the ckb $i"
+        sudo kill $i
+    done
+}
+
+function kill9_ckb() {
     PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
     for i in $PROCESS; do
         echo "killed the ckb $i"
         sudo kill -9 $i
     done
 }
+
+function pkill_ckb() {
+    sudo pkill ckb
+}
+
+function stop_service() {
+    echo "Stopping the service..."
+
+    case "$1" in
+        "kill")
+            kill_ckb
+            ;;
+        "kill9")
+            kill9_ckb
+            ;;
+        "pkill")
+            pkill_ckb
+            ;;
+        *)
+            echo "Invalid argument. Usage: $0 [kill|kill9|pkill]"
+            exit 1
+            ;;
+    esac
+
+    exit 0
+}
+
+trap 'stop_service "$1"' INT
+
+echo "Press Ctrl+C to stop the service..."
+
+while :
+do
+    if pgrep ckb >/dev/null; then
+        echo "ckb process is running..."
+    else
+        break
+    fi
+    sleep 1
+done
+
+wait
 
 toggle_env() {
     # 获取 env.txt 文件的第一行和第三行
@@ -105,8 +156,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-
-    killckb
+    stop_service kill9
     echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
     echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
     python3 sendMsg.py result_${start_day}.log
