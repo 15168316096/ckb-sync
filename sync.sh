@@ -15,7 +15,7 @@ third_line=$(sed -n '3p' env.txt)
 if [ "$third_line" != "1" ]; then
     # 如果第三行不是 1，则打印信息、重启ckb、退出
     echo "$current_time 无需执行仅重启"
-    ./stop_service pkill_ckb
+    ./stop_service kill
     sleep 300
     cd ckb_*_x86_64-unknown-linux-gnu
     sudo nohup ./ckb run >/dev/null 2>&1 &
@@ -43,7 +43,7 @@ tar xzvf ${tar_name}
 rm -f ${tar_name}
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
-./stop_service pkill_ckb
+./stop_service kill
 
 # 初始化节点
 ./ckb --version >../result_${start_day}.log

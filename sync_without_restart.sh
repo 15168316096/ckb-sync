@@ -74,6 +74,6 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-sudo nohup ./ckb run --rich-indexer >/dev/null 2>&1 &
+sudo nohup ./ckb run --indexer >/dev/null 2>&1 &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
