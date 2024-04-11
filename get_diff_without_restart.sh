@@ -60,26 +60,6 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
 fi
 
 
-toggle_env() {
-    # 获取 env.txt 文件的第一行和第三行
-    local first_line=$(head -n 1 env.txt)
-    local third_line=$(sed -n '3p' env.txt)
-
-    if [ "$first_line" = "testnet" ]; then
-        # 如果第一行是 testnet，则替换为 mainnet
-        sed -i "1s/.*/mainnet/" env.txt
-    elif [ "$first_line" = "mainnet" ]; then
-        # 如果第一行是 mainnet，则替换为 testnet
-        sed -i "1s/.*/testnet/" env.txt
-    else
-        echo "第一行既不是mainnet也不是testnet，未做任何更改"
-    fi
-
-    # 第三行置为 1
-    sed -i "3s/.*/1/" env.txt
-
-}
-
 # 检查是否存在sync_end且不存在kill_time
 if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${start_day}.log; then
     # 获取sync_end的Unix时间戳
@@ -99,14 +79,8 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    ./stop_service pkill
-    echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
-    echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
-    python3 sendMsg.py result_${start_day}.log
-    toggle_env
-
     # 检查时间差是否超过4小时 (4小时 = 28800秒)
-    if [[ $time_diff -ge 14400 ]]; then
+    if [[ $time_diff -gt 14400 ]]; then
         ./stop_service pkill
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
         source .env

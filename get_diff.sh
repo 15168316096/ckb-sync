@@ -99,7 +99,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
     # 以kill_ckb停20分钟后再启动
-    if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
+    if [[ $time_diff -gt 3500 && $time_diff -le 3700 ]]; then
         ./stop_service kill
         sleep 1200
         cd ckb_*_x86_64-unknown-linux-gnu
