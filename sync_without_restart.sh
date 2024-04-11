@@ -5,7 +5,7 @@ killckb() {
     PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
     for i in $PROCESS; do
         echo "killed the ckb $i"
-        sudo kill -9 $i
+        sudo kill $i
     done
 }
 
@@ -98,6 +98,5 @@ else
     # 启动节点
     sudo nohup ./ckb run --indexer >/dev/null 2>&1 &
 fi
-
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log

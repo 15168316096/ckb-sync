@@ -3,7 +3,7 @@
 # 获取环境变量
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
-chmod +x stop_service.sh
+
 # 获取localhost_hex_number
 localhost_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$localhost_hex_number" ]]; then
@@ -59,6 +59,14 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 fi
 
+killckb() {
+    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    for i in $PROCESS; do
+        echo "killed the ckb $i"
+        sudo kill $i
+    done
+}
+
 # 检查是否存在sync_end且不存在kill_time
 if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${start_day}.log; then
     # 获取sync_end的Unix时间戳
@@ -80,7 +88,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
 
     # 检查时间差是否超过4小时 (4小时 = 28800秒)
     if [[ $time_diff -ge 14400 ]]; then
-        ./stop_service pkill
+        killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
         source .env
         echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log

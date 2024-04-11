@@ -23,7 +23,7 @@ function pkill_ckb() {
 function stop_service() {
     echo "Stopping the service..."
 
-    case "$1" in
+    case "$0" in
     "kill")
         kill_ckb
         ;;

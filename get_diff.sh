@@ -3,7 +3,6 @@
 # 获取环境变量
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
-chmod +x stop_service.sh
 
 # 获取localhost_hex_number
 localhost_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
@@ -60,6 +59,14 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 fi
 
+kill_ckb() {
+    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    for i in $PROCESS; do
+        echo "killed the ckb $i"
+        sudo kill $i
+    done
+}
+
 toggle_env() {
     # 获取 env.txt 文件的第一行和第三行
     local first_line=$(head -n 1 env.txt)
@@ -98,9 +105,9 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    # 以kill_ckb停20分钟后再启动
+    # ckb停20分钟后再启动
     if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
-        ./stop_service kill
+        killckb
         sleep 1200
         cd ckb_*_x86_64-unknown-linux-gnu
         sudo nohup ./ckb run >/dev/null 2>&1 &
@@ -108,8 +115,8 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
 
     # 检查时间差是否超过8小时 (8小时 = 28800秒)
     if [[ $time_diff -ge 28800 ]]; then
-        # 调用stop_service函数并记录kill_time
-        ./stop_service kill
+        # 调用killckb函数并记录kill_time
+        killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
         echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
