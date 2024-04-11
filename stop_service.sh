@@ -24,7 +24,7 @@ function pkill_ckb() {
 function stop_service() {
     echo "Stopping the service..."
 
-    case "$0" in
+    case "$1" in
     "kill")
         kill_ckb
         ;;
@@ -42,3 +42,6 @@ function stop_service() {
 
     exit 0
 }
+
+# Call stop_service with the first command line argument
+stop_service "$1"
