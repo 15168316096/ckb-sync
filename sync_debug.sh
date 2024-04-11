@@ -15,7 +15,7 @@ third_line=$(sed -n '3p' env.txt)
 if [ "$third_line" != "1" ]; then
     # 如果第三行不是 1，则打印信息、重启ckb、退出
     echo "$current_time 无需执行仅重启"
-    ./stop_service kill
+    ./stop_service pkill
     sleep 300
     cd ckb_*_x86_64-unknown-linux-gnu
     sudo nohup ./ckb run >/dev/null 2>&1 &
@@ -43,10 +43,9 @@ tar xzvf ${tar_name}
 rm -f ${tar_name}
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
-./stop_service kill
+./stop_service pkill
 
 # 初始化节点
-rm -f ../result_${start_day}.log
 ./ckb --version >../result_${start_day}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
@@ -54,6 +53,7 @@ grep 'spec =' ckb.toml
 grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_day}.log
 
 # 修改ckb.toml
+sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
 grep "^listen_address =" ckb.toml
 new_listen_address="0.0.0.0:8114"
 sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.toml
@@ -77,8 +77,7 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-sudo nohup ./ckb run >/dev/null 2>&1 &
-
+sudo nohup ./ckb run | grep -E "ERROR ckb_chain | ERROR ckb_notify" > error.log 2>&1 &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 
