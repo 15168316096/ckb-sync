@@ -53,6 +53,7 @@ grep 'spec =' ckb.toml
 grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_day}.log
 
 # 修改ckb.toml
+sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
 grep "^listen_address =" ckb.toml
 new_listen_address="0.0.0.0:8114"
 sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.toml
@@ -76,8 +77,7 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-sudo nohup ./ckb run >/dev/null 2>&1 &
-
+sudo nohup ./ckb run | grep -E "ERROR ckb_chain | ERROR ckb_notify" > error.log 2>&1 &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 

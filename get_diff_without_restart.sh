@@ -3,7 +3,7 @@
 # 获取环境变量
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
-
+chmod +x stop_service.sh
 # 获取localhost_hex_number
 localhost_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$localhost_hex_number" ]]; then
@@ -59,65 +59,6 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 fi
 
-
-function kill_ckb() {
-    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
-    for i in $PROCESS; do
-        echo "killed the ckb $i"
-        sudo kill $i
-    done
-}
-
-function kill9_ckb() {
-    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
-    for i in $PROCESS; do
-        echo "killed the ckb $i"
-        sudo kill -9 $i
-    done
-}
-
-function pkill_ckb() {
-    sudo pkill ckb
-}
-
-function stop_service() {
-    echo "Stopping the service..."
-
-    case "$1" in
-        "kill")
-            kill_ckb
-            ;;
-        "kill9")
-            kill9_ckb
-            ;;
-        "pkill")
-            pkill_ckb
-            ;;
-        *)
-            echo "Invalid argument. Usage: $0 [kill|kill9|pkill]"
-            exit 1
-            ;;
-    esac
-
-    exit 0
-}
-
-trap 'stop_service "$1"' INT
-
-echo "Press Ctrl+C to stop the service..."
-
-while :
-do
-    if pgrep ckb >/dev/null; then
-        echo "ckb process is running..."
-    else
-        break
-    fi
-    sleep 1
-done
-
-wait
-
 toggle_env() {
     # 获取 env.txt 文件的第一行和第三行
     local first_line=$(head -n 1 env.txt)
@@ -155,8 +96,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     sync_start_timestamp_utc=$(date -u -d "$sync_start_time" +%s)
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
-
-    stop_service kill9
+    ./stop_service pkill
     echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
     echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
     python3 sendMsg.py result_${start_day}.log
