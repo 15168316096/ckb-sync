@@ -24,19 +24,19 @@ function stop_service() {
     echo "Stopping the service..."
 
     case "$1" in
-        "kill")
-            kill_ckb
-            ;;
-        "kill9")
-            kill9_ckb
-            ;;
-        "pkill")
-            pkill_ckb
-            ;;
-        *)
-            echo "Invalid argument. Usage: $0 [kill|kill9|pkill]"
-            exit 1
-            ;;
+    "kill")
+        kill_ckb
+        ;;
+    "kill9")
+        kill9_ckb
+        ;;
+    "pkill")
+        pkill_ckb
+        ;;
+    *)
+        echo "Invalid argument. Usage: $0 [kill|kill9|pkill]"
+        exit 1
+        ;;
     esac
 
     exit 0

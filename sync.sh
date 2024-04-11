@@ -31,7 +31,15 @@ start_day=$day
 sed -i "2s/.*/$start_day/" env.txt
 
 #拉取、解压ckb tar包
-ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq -r '.[] | select(.tag_name | startswith("v0.115")) | .tag_name' | sort -V | tail -n 1)
+ckb_version=$(
+    curl -s https://api.github.com/repos/nervosnetwork/ckb/releases |
+        jq -r '.[] | select(.tag_name | startswith("v0.115")) |
+        {tag_name, published_at} | "\(.published_at) \(.tag_name)"' |
+        sort |
+        tail -n 1 |
+        cut -d " " -f2
+)
+echo "Latest CKB version: $ckb_version"
 tar_name="ckb_${ckb_version}_x86_64-unknown-linux-gnu.tar.gz"
 
 if [ ! -f "$tar_name" ]; then

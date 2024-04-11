@@ -24,8 +24,15 @@ else
     else
         version_prefix="v0.$1"
     fi
-    ckb_version=$(curl -s https://api.github.com/repos/nervosnetwork/ckb/releases | jq --arg vprefix "$version_prefix" -r '.[] | select(.tag_name | startswith($vprefix)) | .tag_name' | sort -V | tail -n 1)
-    echo "CKB版本号为：$ckb_version"
+    ckb_version=$(
+        curl -s https://api.github.com/repos/nervosnetwork/ckb/releases |
+            jq -r '.[] | select(.tag_name | startswith("v0.115")) |
+        {tag_name, published_at} | "\(.published_at) \(.tag_name)"' |
+            sort |
+            tail -n 1 |
+            cut -d " " -f2
+    )
+    echo "Latest CKB version: $ckb_version"
 fi
 
 # 从env中选取testnet或mainnet，以及写入当前日期到env.txt
@@ -89,7 +96,7 @@ else
     # grep "^modules =" ckb.toml
 
     # 启动节点
-    sudo nohup ./ckb run >/dev/null 2>&1 &
+    sudo nohup ./ckb run --indexer >/dev/null 2>&1 &
 fi
 
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
