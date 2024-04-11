@@ -80,7 +80,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
     # 检查时间差是否超过4小时 (4小时 = 28800秒)
-    if [[ $time_diff -gt 14400 ]]; then
+    if [[ $time_diff -ge 14400 ]]; then
         ./stop_service pkill
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
         source .env
