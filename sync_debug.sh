@@ -61,7 +61,10 @@ grep 'spec =' ckb.toml
 grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_day}.log
 
 # 修改ckb.toml
-sed -i 's/cat  = \"info\"/filter = \"info,ckb=debug\"/' ckb.toml
+grep "^filter =" ckb.toml
+sed -i 's/filter *= *"info"/filter = "info,ckb=debug"/' ckb.toml
+grep "^filter =" ckb.toml
+
 grep "^listen_address =" ckb.toml
 new_listen_address="0.0.0.0:8114"
 sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.toml
