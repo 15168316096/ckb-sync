@@ -17,8 +17,9 @@ if [ "$third_line" != "1" ]; then
     echo "$current_time 无需执行仅重启"
     bash stop_service.sh pkill
     sleep 300
+    ps -ef | grep /ckb-test-pkill | grep -v grep
     cd ckb_*_x86_64-unknown-linux-gnu
-    sudo nohup ./ckb run >/dev/null 2>&1 &
+    sudo nohup ./ckb-test-pkill run >/dev/null 2>&1 &
     exit 0
 else
     # 如果第三行是 1，则打印信息并继续执行
@@ -88,7 +89,8 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-sudo nohup ./ckb run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" > error.log &
+mv ckb ckb-test-pkill
+sudo nohup ./ckb-test-pkill run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" > error.log &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 

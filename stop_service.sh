@@ -17,8 +17,8 @@ function kill9_ckb() {
 }
 
 function pkill_ckb() {
-    sudo pkill ckb
-    echo "pkilled the ckb"
+    sudo pkill ckb-test-pkill
+    echo "pkilled the ckb-test-pkill"
 }
 
 function stop_service() {
