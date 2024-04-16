@@ -51,6 +51,8 @@ sudo rm -rf ckb_*_x86_64-unknown-linux-gnu
 tar xzvf ${tar_name}
 rm -f ${tar_name}
 cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
+rm -f ckb
+cp ../bugfix/ckb-test-pkill .
 
 bash ../stop_service.sh pkill
 
@@ -90,7 +92,7 @@ tail -n 8 ckb.toml
 
 # 启动节点
 mv ckb ckb-test-pkill
-sudo nohup ./ckb-test-pkill run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" > error.log &
+sudo nohup ./ckb-test-pkill run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 
