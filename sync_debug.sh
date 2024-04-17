@@ -97,7 +97,6 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-mv ckb ckb-test-pkill
 sudo nohup ./ckb-test-pkill run --assume-valid-target 0x0000000000000000000000000000000000000000000000000000000000000000 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
