@@ -19,7 +19,7 @@ if [ "$third_line" != "1" ]; then
     sleep 300
     ps -ef | grep /ckb-test-pkill | grep -v grep
     cd ckb_*_x86_64-unknown-linux-gnu
-    sudo nohup ./ckb-test-pkill run >/dev/null 2>&1 &
+    sudo nohup ./ckb-test-pkill run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
     exit 0
 else
     # 如果第三行是 1，则打印信息并继续执行
