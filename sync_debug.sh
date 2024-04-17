@@ -19,7 +19,7 @@ if [ "$third_line" != "1" ]; then
     sleep 300
     ps -ef | grep /ckb-test-pkill | grep -v grep
     cd ckb_*_x86_64-unknown-linux-gnu
-    sudo nohup ./ckb-test-pkill run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
+    sudo nohup ./ckb-test-pkill run --assume-valid-target 0x0000000000000000000000000000000000000000000000000000000000000000 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
     exit 0
 else
     # 如果第三行是 1，则打印信息并继续执行
@@ -57,6 +57,12 @@ cp ../bugfix/ckb-test-pkill .
 bash ../stop_service.sh pkill
 
 # 初始化节点
+if [ -f "../result_${start_day}.log" ]; then
+    # 如果文件存在，则删除文件
+    rm -f ../result_${start_day}.log
+    # 打印信息提示已删除
+    echo "result_${start_day}.log已被删除"
+fi
 ./ckb --version >../result_${start_day}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
@@ -92,7 +98,7 @@ tail -n 8 ckb.toml
 
 # 启动节点
 mv ckb ckb-test-pkill
-sudo nohup ./ckb-test-pkill run 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
+sudo nohup ./ckb-test-pkill run --assume-valid-target 0x0000000000000000000000000000000000000000000000000000000000000000 2>&1 | grep -E "ERROR ckb_chain|ERROR ckb_notify" >error.log &
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 
