@@ -63,8 +63,8 @@ if [ -f "../result_${start_day}.log" ]; then
     # 打印信息提示已删除
     echo "result_${start_day}.log已被删除"
 fi
-./ckb --version >../result_${start_day}.log
-sudo ./ckb init --chain ${env} --force
+./ckb-test-pkill --version >../result_${start_day}.log
+sudo ./ckb-test-pkill init --chain ${env} --force
 echo "------------------------------------------------------------"
 grep 'spec =' ckb.toml
 grep 'spec =' ckb.toml | cut -d'/' -f2 | cut -d'.' -f1 >>../result_${start_day}.log
