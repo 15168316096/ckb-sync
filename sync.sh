@@ -63,7 +63,12 @@ cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 killckb
 
 # 初始化节点
-rm -f ../result_${start_day}.log
+if [ -f "../result_${start_day}.log" ]; then
+    # 如果文件存在，则删除文件
+    rm -f ../result_${start_day}.log
+    # 打印信息提示已删除
+    echo "result_${start_day}.log已被删除"
+fi
 ./ckb --version >../result_${start_day}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
