@@ -16,7 +16,7 @@ if [ ! -f "env.txt" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-    echo "请输入CKB版本号，如：bash sync_without_restart.sh 115"
+    echo "请输入CKB版本号，如：bash sync_without_restart.sh 116"
     exit 1
 else
     if [[ "$1" == "async" ]]; then
@@ -26,7 +26,7 @@ else
     fi
     ckb_version=$(
         curl -s https://api.github.com/repos/nervosnetwork/ckb/releases |
-            jq -r '.[] | select(.tag_name | startswith("v0.115")) |
+            jq --arg vp "$version_prefix" -r '.[] | select(.tag_name | startswith($vp)) |
         {tag_name, published_at} | "\(.published_at) \(.tag_name)"' |
             sort |
             tail -n 1 |
@@ -61,7 +61,12 @@ cd ckb_${ckb_version}_x86_64-unknown-linux-gnu
 killckb
 
 # 初始化节点
-rm -f ../result_${start_day}.log
+if [ -f "../result_${start_day}.log" ]; then
+    # 如果文件存在，则删除文件
+    rm -f ../result_${start_day}.log
+    # 打印信息提示已删除
+    echo "result_${start_day}.log已被删除"
+fi
 ./ckb --version >../result_${start_day}.log
 sudo ./ckb init --chain ${env} --force
 echo "------------------------------------------------------------"
