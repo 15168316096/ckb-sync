@@ -79,6 +79,11 @@ new_listen_address="0.0.0.0:8114"
 sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.toml
 grep "^listen_address =" ckb.toml
 
+grep "^modules =" ckb.toml
+new_module="\"Indexer\""
+sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
+grep "^modules =" ckb.toml
+
 config_content="
 [metrics.exporter.prometheus]
 target = { type = \"prometheus\", listen_address = \"0.0.0.0:8100\" }
@@ -101,7 +106,7 @@ else
     # grep "^modules =" ckb.toml
 
     # 启动节点
-    sudo nohup ./ckb run --indexer >/dev/null 2>&1 &
+    sudo nohup ./ckb run >/dev/null 2>&1 &
 fi
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
