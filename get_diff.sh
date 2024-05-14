@@ -105,13 +105,13 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    # ckb停20分钟后再启动
-    if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
-        killckb
-        sleep 1200
-        cd ckb_*_x86_64-unknown-linux-gnu
-        sudo nohup ./ckb run >/dev/null 2>&1 &
-    fi
+    #    # ckb停20分钟后再启动
+    #    if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
+    #        killckb
+    #        sleep 1200
+    #        cd ckb_*_x86_64-unknown-linux-gnu
+    #        sudo nohup ./ckb run >/dev/null 2>&1 &
+    #    fi
 
     # 检查时间差是否超过4小时 (4小时 = 14400秒)
     if [[ $time_diff -ge 14400 ]]; then
@@ -120,6 +120,19 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
         echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
+
+        sleep 10
+        ckb_version=$(sed -n '1p' result_${start_day}.log | grep -oP 'ckb \K[^ ]+(?=\s*\()')
+        env=$(sed -n '2p' result_${start_day}.log)
+        log_file="block_verifier_${ckb_version}_${env}.log"
+        if [ ! -f "$log_file" ]; then
+            sudo rm -rf ./replay
+            mkdir replay
+            cd ckb_*_x86_64-unknown-linux-gnu
+            nohup sudo ./ckb replay --tmp-target ../replay --profile 1 12960000 | grep block_verifier >"../$log_file" 2>&1 &
+            cd ..
+        fi
+
         toggle_env
     fi
 fi
