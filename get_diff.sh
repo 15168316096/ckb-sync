@@ -123,7 +123,6 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
 
         sleep 10
         ckb_version=$(sed -n '1p' result_${start_day}.log | grep -oP 'ckb \K[^ ]+(?=\s*\()')
-        env=$(sed -n '2p' result_${start_day}.log)
         log_file="block_verifier_${ckb_version}_${env}.log"
         if [ ! -f "$log_file" ]; then
             sudo rm -rf ./replay
