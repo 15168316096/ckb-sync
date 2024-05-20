@@ -58,7 +58,7 @@ if [ ! -f "$tar_name" ]; then
     wget -q "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
 fi
 
-sudo rm -rf ckb_*_x86_64-unknown-linux-gnu_${env}
+sudo rm -rf ${env}_ckb_*_x86_64-unknown-linux-gnu
 tar xzvf ${tar_name}
 rm -f ${tar_name}
 mv ckb_${ckb_version}_x86_64-unknown-linux-gnu ${env}_ckb_${ckb_version}_x86_64-unknown-linux-gnu
