@@ -128,7 +128,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
         if [ ! -f "$log_file" ]; then
             sudo rm -rf ./replay
             mkdir replay
-            cd ckb_*_x86_64-unknown-linux-gnu
+            cd ${env}_ckb_*_x86_64-unknown-linux-gnu
             nohup sudo ./ckb replay --tmp-target ../replay --profile 1 12960000 | grep block_verifier >"../$log_file" 2>&1 &
             cd ..
         fi
