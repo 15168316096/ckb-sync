@@ -34,7 +34,7 @@ if [ "$third_line" != "1" ]; then
     echo "$current_time 无需执行仅重启"
     killckb
     sleep 300
-    cd ckb_*_x86_64-unknown-linux-gnu_${env}
+    cd ${env}_ckb_*_x86_64-unknown-linux-gnu
     sudo nohup ./ckb run >/dev/null 2>&1 &
     exit 0
 else
@@ -61,8 +61,8 @@ fi
 sudo rm -rf ckb_*_x86_64-unknown-linux-gnu_${env}
 tar xzvf ${tar_name}
 rm -f ${tar_name}
-mv ckb_${ckb_version}_x86_64-unknown-linux-gnu ckb_${ckb_version}_x86_64-unknown-linux-gnu_${env}
-cd ckb_${ckb_version}_x86_64-unknown-linux-gnu_${env}
+mv ckb_${ckb_version}_x86_64-unknown-linux-gnu ${env}_ckb_${ckb_version}_x86_64-unknown-linux-gnu
+cd _${env}_ckb_${ckb_version}_x86_64-unknown-linux-gnu
 
 killckb
 
