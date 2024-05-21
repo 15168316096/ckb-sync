@@ -16,17 +16,15 @@ if [ ! -f "env.txt" ]; then
     echo "1" >>env.txt
 fi
 
-# 从env中选取testnet或mainnet，以及写入当前日期到env.txt
-current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-env=$(sed -n '1p' env.txt)
-start_day=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
-sed -i "2s/.*/$start_day/" env.txt
-
 # 判断当前是否需要执行
 if pgrep -f "./ckb replay" >/dev/null; then
     echo "'./ckb replay' is running"
     exit 0
 fi
+
+# 从env中选取testnet或mainnet，以及获取当前时间
+env=$(sed -n '1p' env.txt)
+current_time=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 
 third_line=$(sed -n '3p' env.txt)
 if [ "$third_line" != "1" ]; then
@@ -41,6 +39,10 @@ else
     # 如果第三行是 1，则打印信息并继续执行
     echo "$current_time 开始执行"
 fi
+
+# 写入当前日期到env.txt
+start_day=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
+sed -i "2s/.*/$start_day/" env.txt
 
 #拉取、解压ckb tar包
 ckb_version=$(
