@@ -20,7 +20,7 @@ if [ $# -eq 0 ]; then
     exit 1
 else
     if [[ "$1" == "async" ]]; then
-        version_prefix="v0.115" # 当第一个参数是async时，设置默认版本号
+        version_prefix="v0.116.1" # 当第一个参数是async时，设置默认版本号
     else
         version_prefix="v0.$1"
     fi
