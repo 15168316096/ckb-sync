@@ -24,7 +24,7 @@ done
 # 做ckb镜像
 git clone https://github.com/nervosnetwork/ckb.git
 cd ckb
-git checkout ckb-async-download
+git checkout ckb-async-download-rc2
 make docker
 
 # 提取镜像名称和标签
