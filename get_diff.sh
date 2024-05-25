@@ -121,6 +121,14 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
         echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=18.163.221.211:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
 
+        if [ "${env}" = "mainnet" ]; then
+            replay_height=13050000
+        elif [ "${env}" = "testnet" ]; then
+            replay_height=13360000
+        else
+            echo "Unknown environment: ${env}"
+            exit 1
+        fi
         sleep 10
         ckb_version=$(sed -n '1p' result_${start_day}.log | grep -oP 'ckb \K[^ ]+(?=\s*\()')
         log_file="block_verifier_${ckb_version}_${env}.log"
@@ -128,7 +136,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
             sudo rm -rf ./replay
             mkdir replay
             cd ${env}_ckb_*_x86_64-unknown-linux-gnu
-            nohup sudo ./ckb replay --tmp-target ../replay --profile 1 12960000 | grep block_verifier >"../$log_file" 2>&1 &
+            nohup sudo ./ckb replay --tmp-target ../replay --profile 1 ${replay_height} | grep block_verifier >"../$log_file" 2>&1 &
             cd ..
         fi
 
