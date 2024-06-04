@@ -106,6 +106,8 @@ tail -n 8 ckb.toml
 
 # 启动节点
 sudo nohup ./ckb run >/dev/null 2>&1 &
+echo "$(grep -c ^processor /proc/cpuinfo)C$(free -h | grep Mem | awk '{print $2}' | sed 's/Gi//')G" >>../result_${start_day}.log
+echo "$(lsb_release -d | sed 's/Description:\s*//')" >>../result_${start_day}.log
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 
