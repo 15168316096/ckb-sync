@@ -4,41 +4,47 @@
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
 
-# 获取localhost_hex_number
-localhost_hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
-if [[ $? -ne 0 || -z "$localhost_hex_number" ]]; then
-    localhost_number="获取失败"
+localhost_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.height' | sed 's/^0x//')
+if [[ $? -ne 0 || -z "$localhost_hex_height" ]]; then
+    localhost_height="获取失败"
 else
-    localhost_number=$((16#$localhost_hex_number))
+    localhost_height=$((16#$localhost_hex_height))
 fi
 
-# 获取mainnet或testnnet的hex_number
-hex_number=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://${env}.ckbapp.dev | jq -r '.result.number' | sed 's/^0x//')
-if [[ $? -ne 0 || -z "$hex_number" ]]; then
-    number="获取失败"
+indexer_tip_hex=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_indexer_tip", "params": []}' http://localhost:8114 | jq -r '.result.block_number' | sed 's/^0x//')
+if [[ $? -ne 0 || -z "$indexer_tip_hex" ]]; then
+    indexer_tip="获取失败"
 else
-    number=$((16#$hex_number))
+    indexer_tip=$((16#$indexer_tip_hex))
 fi
 
-# 计算差值或指出无法计算
-if [[ $localhost_number =~ ^[0-9]+$ && $number =~ ^[0-9]+$ ]]; then
-    difference=$(($number - $localhost_number))
+# 获取mainnet或testnnet的最新区块高度
+latest_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://${env}.ckbapp.dev | jq -r '.result.height' | sed 's/^0x//')
+if [[ $? -ne 0 || -z "$latest_hex_height" ]]; then
+    latest_height="获取失败"
+else
+    latest_height=$((16#$latest_hex_height))
+fi
+
+# 计算本地和最新区块高度差值或指出无法计算
+if [[ $localhost_height =~ ^[0-9]+$ && $latest_height =~ ^[0-9]+$ ]]; then
+    difference=$(($latest_height - $localhost_height))
     if [[ $difference -lt 0 ]]; then
         difference=$((-$difference)) # 转换为绝对值
     fi
-    sync_rate=$(echo "scale=10; $localhost_number * 100 / $number" | bc | awk '{printf "%.2f\n", $0}')
+    sync_rate=$(echo "scale=10; $localhost_height * 100 / $latest_height" | bc | awk '{printf "%.2f\n", $0}')
     sync_rate="${sync_rate}%"
 else
     difference="无法计算"
     sync_rate="无法计算"
 fi
 
-echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") localhost_number: ${localhost_number} ${env}_number: ${number} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_day}.log
+echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") indexer_tip: ${indexer_tip} height: ${localhost_height} ${env}_height: ${latest_height} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_day}.log
 
 # 检查sync_end是否存在，并且差值小于总高度的1%
-if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 12000 ]]; then
+if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 13000 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-    echo "sync_end: ${sync_end}（当前高度：$localhost_number）" >>result_${start_day}.log
+    echo "sync_end: ${sync_end}（当前高度：$localhost_height,当前indexer_tip：$indexer_tip）" >>result_${start_day}.log
 
     # 从日志文件中读取开始时间
     sync_start=$(grep 'sync_start' result_${start_day}.log | cut -d' ' -f2-)
@@ -105,23 +111,15 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    #    # ckb停20分钟后再启动
-    #    if [[ $time_diff -ge 3500 && $time_diff -le 3700 ]]; then
-    #        killckb
-    #        sleep 1200
-    #        cd ckb_*_x86_64-unknown-linux-gnu
-    #        sudo nohup ./ckb run >/dev/null 2>&1 &
-    #    fi
-
-    # 检查时间差是否超过4小时 (4小时 = 14400秒)
     if [[ $time_diff -ge 14400 ]]; then
         # 调用killckb函数并记录kill_time
         killckb
-        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_number）" >>result_${start_day}.log
+        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_height,当前indexer_tip：$indexer_tip）" >>result_${start_day}.log
         NODE_IP=$(curl ifconfig.me)
         echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
 
+        # replay逻辑
         if [ "${env}" = "mainnet" ]; then
             replay_height=13050000
         elif [ "${env}" = "testnet" ]; then
@@ -130,7 +128,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
             echo "Unknown environment: ${env}"
             exit 1
         fi
-        sleep 10
+        sleep 60
         ckb_version=$(sed -n '1p' result_${start_day}.log | grep -oP 'ckb \K[^ ]+(?=\s*\()')
         log_file="block_verifier_${ckb_version}_${env}.log"
         if [ ! -f "$log_file" ]; then
