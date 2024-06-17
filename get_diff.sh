@@ -4,7 +4,7 @@
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
 
-localhost_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.height' | sed 's/^0x//')
+localhost_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$localhost_hex_height" ]]; then
     localhost_height="获取失败"
 else
@@ -19,7 +19,7 @@ else
 fi
 
 # 获取mainnet或testnnet的最新区块高度
-latest_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://${env}.ckbapp.dev | jq -r '.result.height' | sed 's/^0x//')
+latest_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' https://${env}.ckbapp.dev | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$latest_hex_height" ]]; then
     latest_height="获取失败"
 else
