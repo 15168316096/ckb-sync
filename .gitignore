@@ -6,3 +6,5 @@ result_*
 sync.log
 kubernetes/ckb
 kubernetes/Dockerfile
+.env
+._*
