@@ -2,7 +2,8 @@
 
 PACKAGE_DIR="../ckbVersion"
 PORT=8124
-assume_valid_target="0x0000000000000000000000000000000000000000000000000000000000000000"
+# 0x0000000000000000000000000000000000000000000000000000000000000000
+assume_valid_target=""
 
 killckb() {
     PID=$(lsof -i :$PORT | grep 'ckb' | awk '{print $2}')
@@ -103,7 +104,7 @@ tail -n 8 ckb.toml
 nohup ./ckb run --assume-valid-target ${assume_valid_target} >/dev/null 2>&1 &
 
 if [ -z "${assume_valid_target}" ]; then
-    echo "assume-valid-target: default" >>../result_${start_day}.log
+    echo "assume-valid-target: [default](https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs)" >>../result_${start_day}.log
 else
     echo "assume-valid-target: ${assume_valid_target}" >>../result_${start_day}.log
 fi
