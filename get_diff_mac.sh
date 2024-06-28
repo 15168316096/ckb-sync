@@ -47,7 +47,7 @@ echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") indexer_tip: ${indexer_tip
 # 检查sync_end是否存在，并且差值小于总高度的1%
 if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 12000 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-    echo "sync_end: ${sync_end}（当前高度: $localhost_height ,当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
+    echo "sync_end: ${sync_end}（当前高度: $localhost_height, 当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
 
     # 从日志文件中读取开始时间
     sync_start=$(grep 'sync_start' result_${start_day}.log | cut -d' ' -f2-)
@@ -104,7 +104,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 检查时间差是否超过4小时 (4小时 = 14400秒)
     if [[ $time_diff -ge 14400 ]]; then
         killckb
-        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度: $localhost_height ,当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
+        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度: $localhost_height, 当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
         source .env
         echo "详见: https://grafana-monitor.nervos.tech/d/cb7211b5-f4f4-4b5e-b1f9-bbf71a355818/test-scz?orgId=1&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
 
