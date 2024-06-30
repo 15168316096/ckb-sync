@@ -101,11 +101,11 @@ interval = 5
 echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
-nohup ./ckb run --assume-valid-target ${assume_valid_target} >/dev/null 2>&1 &
-
 if [ -z "${assume_valid_target}" ]; then
+    nohup ./ckb run >/dev/null 2>&1 &
     echo "assume-valid-target: [default](https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs)" >>../result_${start_day}.log
 else
+    nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
     echo "assume-valid-target: ${assume_valid_target}" >>../result_${start_day}.log
 fi
 echo "$(sysctl -n hw.ncpu)C$(($(sysctl -n hw.memsize) / 1024 / 1024 / 1024))G  macOS $(sw_vers -productVersion)  $(sysctl -n machdep.cpu.brand_string)" >>../result_${start_day}.log
