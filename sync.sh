@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 0x0000000000000000000000000000000000000000000000000000000000000000
+assume_valid_target=""
+
 # 定义函数
 killckb() {
     PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
@@ -105,9 +108,14 @@ echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
 # 启动节点
-sudo nohup ./ckb run >/dev/null 2>&1 &
-echo "$(grep -c ^processor /proc/cpuinfo)C$(free -h | grep Mem | awk '{print $2}' | sed 's/Gi//')G" >>../result_${start_day}.log
-echo "$(lsb_release -d | sed 's/Description:\s*//')" >>../result_${start_day}.log
+if [ -z "${assume_valid_target}" ]; then
+    nohup ./ckb run >/dev/null 2>&1 &
+    echo "assume-valid-target: [default](https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs)" >>../result_${start_day}.log
+else
+    nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
+    echo "assume-valid-target: ${assume_valid_target}" >>../result_${start_day}.log
+fi
+echo "$(grep -c ^processor /proc/cpuinfo)C$(free -h | grep Mem | awk '{print $2}' | sed 's/Gi//')G    $(lsb_release -d | sed 's/Description:\s*//')    $(lscpu | grep "Model name" | cut -d ':' -f2 | xargs)" >>../result_${start_day}.log
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
 
