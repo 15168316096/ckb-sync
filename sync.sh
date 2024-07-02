@@ -109,10 +109,10 @@ tail -n 8 ckb.toml
 
 # 启动节点
 if [ -z "${assume_valid_target}" ]; then
-    nohup ./ckb run >/dev/null 2>&1 &
+   sudo nohup ./ckb run >/dev/null 2>&1 &
     echo "assume-valid-target: [default](https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs)" >>../result_${start_day}.log
 else
-    nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
+    sudo nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
     echo "assume-valid-target: ${assume_valid_target}" >>../result_${start_day}.log
 fi
 echo "$(grep -c ^processor /proc/cpuinfo)C$(free -h | grep Mem | awk '{print $2}' | sed 's/Gi//')G    $(lsb_release -d | sed 's/Description:\s*//')    $(lscpu | grep "Model name" | cut -d ':' -f2 | xargs)" >>../result_${start_day}.log
