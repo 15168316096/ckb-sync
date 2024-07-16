@@ -3,6 +3,7 @@
 # 获取环境变量
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
+rich_indexer_type=$(sed -n '4p' env.txt)
 
 localhost_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$localhost_hex_height" ]]; then
@@ -63,10 +64,17 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     seconds=$((diff_sec % 60))
 
     echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
+
+    if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
+        cat result_${start_day}.log >tmp_result_${start_day}.log
+        echo "ckb已同步到最新高度, 4小时后会被kill掉, 请及时查询" >>tmp_result_${start_day}.log
+        python3 sendMsg.py tmp_result_${start_day}.log
+    fi
+
 fi
 
 killckb() {
-    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    PROCESS=$(ps -ef | grep "ckb run" | grep -v grep | awk '{print $2}' | sed -n '2,10p')
     for i in $PROCESS; do
         echo "killed the ckb $i"
         sudo kill $i
@@ -74,21 +82,27 @@ killckb() {
 }
 
 toggle_env() {
-    # 获取 env.txt 文件的第一行和第三行
-    local first_line=$(head -n 1 env.txt)
-    local third_line=$(sed -n '3p' env.txt)
+    local first_line=$(sed -n '1p' env.txt)
+    local fourth_line=$(sed -n '4p' env.txt)
 
-    if [ "$first_line" = "testnet" ]; then
-        # 如果第一行是 testnet，则替换为 mainnet
+    # 根据第四行的值来更改第一行和第四行
+    if [ "$fourth_line" = "1" ]; then
+        sed -i "4s/.*/2/" env.txt
         sed -i "1s/.*/mainnet/" env.txt
-    elif [ "$first_line" = "mainnet" ]; then
-        # 如果第一行是 mainnet，则替换为 testnet
+    elif [ "$fourth_line" = "2" ]; then
+        sed -i "4s/.*/3/" env.txt
+        sed -i "1s/.*/mainnet/" env.txt
+    elif [ "$fourth_line" = "3" ]; then
+        sed -i "4s/.*/4/" env.txt
+        sed -i "1s/.*/mainnet/" env.txt
+    elif [ "$fourth_line" = "4" ]; then
+        sed -i "4s/.*/1/" env.txt
         sed -i "1s/.*/testnet/" env.txt
     else
-        echo "第一行既不是mainnet也不是testnet，未做任何更改"
+        echo "第四行不是1、2、3或4，未做任何更改"
     fi
 
-    # 第三行置为 1
+    # 无论如何都将第三行设置为1
     sed -i "3s/.*/1/" env.txt
 }
 

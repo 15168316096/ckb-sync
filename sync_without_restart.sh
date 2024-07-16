@@ -2,7 +2,7 @@
 
 # 定义函数
 killckb() {
-    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    PROCESS=$(ps -ef | grep "ckb run" | grep -v grep | awk '{print $2}' | sed -n '2,10p')
     for i in $PROCESS; do
         echo "killed the ckb $i"
         sudo kill $i

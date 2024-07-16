@@ -5,7 +5,7 @@ assume_valid_target=""
 
 # 定义函数
 killckb() {
-    PROCESS=$(ps -ef | grep /ckb | grep -v grep | awk '{print $2}' | sed -n '2,10p')
+    PROCESS=$(ps -ef | grep "ckb run" | grep -v grep | awk '{print $2}' | sed -n '2,10p')
     for i in $PROCESS; do
         echo "killed the ckb $i"
         sudo kill $i
@@ -16,6 +16,7 @@ if [ ! -f "env.txt" ]; then
     echo "env.txt，使用默认环境'mainnet'"
     echo "mainnet" >env.txt
     echo "2024-01-01" >>env.txt
+    echo "1" >>env.txt
     echo "1" >>env.txt
 fi
 
@@ -46,6 +47,8 @@ fi
 # 写入当前日期到env.txt
 start_day=$(TZ='Asia/Shanghai' date "+%Y-%m-%d")
 sed -i "2s/.*/$start_day/" env.txt
+
+rich_indexer_type=$(sed -n '4p' env.txt)
 
 #拉取、解压ckb tar包
 ckb_version=$(
@@ -91,7 +94,11 @@ sed -i "s/^listen_address = .*/listen_address = \"$new_listen_address\"/" ckb.to
 grep "^listen_address =" ckb.toml
 
 grep "^modules =" ckb.toml
-new_module="\"Indexer\""
+if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
+    new_module="\"RichIndexer\""
+else
+    new_module="\"Indexer\""
+fi
 sed -i "/^modules = .*/s/\]/, $new_module\]/" ckb.toml
 grep "^modules =" ckb.toml
 
@@ -107,14 +114,33 @@ interval = 5
 echo "$config_content" >>ckb.toml
 tail -n 8 ckb.toml
 
+if [ "$rich_indexer_type" = "1" ]; then
+    sudo systemctl stop postgresql
+    sudo rm -rf /var/lib/postgresql/16/main
+    sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D /var/lib/postgresql/16/main
+    sudo sed -i 's/scram-sha-256/trust/g' /etc/postgresql/16/main/pg_hba.conf
+    sudo systemctl start postgresql
+    sudo systemctl status postgresql
+    sed -i '/^# \[indexer_v2\.rich_indexer\]/,/^# db_password = "123456"$/s/^# //' ckb.toml
+fi
+
+if [ "$rich_indexer_type" = "1" ]; then
+    echo "rich-indexer type: PostgreSQL" >>../result_${start_day}.log
+elif [ "$rich_indexer_type" = "2" ]; then
+    echo "rich-indexer type: SQLite" >>../result_${start_day}.log
+else
+    echo "rich-indexer type: Not Enabled" >>../result_${start_day}.log
+fi
+
 # 启动节点
 if [ -z "${assume_valid_target}" ]; then
-   sudo nohup ./ckb run >/dev/null 2>&1 &
+    sudo nohup ./ckb run >/dev/null 2>&1 &
     echo "assume-valid-target: [default](https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs)" >>../result_${start_day}.log
 else
     sudo nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
     echo "assume-valid-target: ${assume_valid_target}" >>../result_${start_day}.log
 fi
+
 echo "$(grep -c ^processor /proc/cpuinfo)C$(free -h | grep Mem | awk '{print $2}' | sed 's/Gi//')G    $(lsb_release -d | sed 's/Description:\s*//')    $(lscpu | grep "Model name" | cut -d ':' -f2 | xargs)" >>../result_${start_day}.log
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
 echo "sync_start: ${sync_start}" >>../result_${start_day}.log
