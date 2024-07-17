@@ -76,8 +76,8 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
 fi
 
 killckb() {
-    PROCESS=$(ps -ef | grep "ckb run" | grep -v grep | awk '{print $2}' | sed -n '2,10p')
-    for i in $PROCESS; do
+    PIDS=$(sudo lsof -ti:8114)
+    for i in $PIDS; do
         echo "killed the ckb $i"
         sudo kill $i
     done
