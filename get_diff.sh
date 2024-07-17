@@ -45,7 +45,7 @@ echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") indexer_tip: ${indexer_tip
 # 检查sync_end是否存在，并且差值小于总高度的1%
 if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 13000 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-    echo "sync_end: ${sync_end}（当前高度：$localhost_height,当前indexer_tip：$indexer_tip）" >>result_${start_day}.log
+    echo "sync_end: ${sync_end}（当前高度：$localhost_height,当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
 
     # 从日志文件中读取开始时间
     sync_start=$(grep 'sync_start' result_${start_day}.log | cut -d' ' -f2-)
@@ -63,7 +63,7 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     minutes=$(((diff_sec % 3600) / 60))
     seconds=$((diff_sec % 60))
 
-    echo "同步到最新indexer高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
+    echo "同步到最新indexer高度耗时: ${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 
     if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
         cat result_${start_day}.log >tmp_result_${start_day}.log
@@ -101,7 +101,7 @@ toggle_env() {
         sed -i "4s/.*/1/" env.txt
         sed -i "1s/.*/testnet/" env.txt
     else
-        echo "第四行不是1、2、3或4，未做任何更改"
+        echo "第四行不是1、2、3或4, 未做任何更改"
     fi
 
     # 无论如何都将第三行设置为1
@@ -130,7 +130,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     if [[ $time_diff -ge 14400 ]]; then
         # 调用killckb函数并记录kill_time
         killckb
-        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_height,当前indexer_tip：$indexer_tip）" >>result_${start_day}.log
+        echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_height,当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
         NODE_IP=$(curl ifconfig.me)
         echo "详见: https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
