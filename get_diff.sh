@@ -63,12 +63,12 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     minutes=$(((diff_sec % 3600) / 60))
     seconds=$((diff_sec % 60))
 
-    echo "同步到最新高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
+    echo "同步到最新indexer高度耗时：${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>result_${start_day}.log
 
     if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
         cat result_${start_day}.log >tmp_result_${start_day}.log
         echo "" >>tmp_result_${start_day}.log
-        echo "ckb已同步到最新高度, 4小时后会被kill掉, 请及时查询。" >>tmp_result_${start_day}.log
+        echo "indexer已同步到最新高度, 4小时后会kill掉ckb进程, 请及时查询。" >>tmp_result_${start_day}.log
         python3 sendMsg.py tmp_result_${start_day}.log
         rm -f tmp_result_${start_day}.log
     fi
@@ -132,7 +132,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
         killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_height,当前indexer_tip：$indexer_tip）" >>result_${start_day}.log
         NODE_IP=$(curl ifconfig.me)
-        echo "详见：https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
+        echo "详见: https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
 
         # replay逻辑
