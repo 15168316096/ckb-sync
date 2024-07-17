@@ -13,7 +13,6 @@ killckb() {
 }
 
 if [ ! -f "env.txt" ]; then
-    echo "env.txt，使用默认环境'mainnet'"
     echo "mainnet" >env.txt
     echo "2024-01-01" >>env.txt
     echo "1" >>env.txt
