@@ -135,7 +135,8 @@ fi
 # 启动节点
 if [ -z "${assume_valid_target}" ]; then
     sudo nohup ./ckb run >/dev/null 2>&1 &
-    echo "assume-valid-target: [default](https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs)" >>../result_${start_day}.log
+    # https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs
+    echo "assume-valid-target: default" >>../result_${start_day}.log
 else
     sudo nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
     echo "assume-valid-target: ${assume_valid_target}" >>../result_${start_day}.log

@@ -27,13 +27,13 @@ else
     latest_height=$((16#$latest_hex_height))
 fi
 
-# 计算本地和最新区块高度差值或指出无法计算
-if [[ $localhost_height =~ ^[0-9]+$ && $latest_height =~ ^[0-9]+$ ]]; then
-    difference=$(($latest_height - $localhost_height))
+# 计算本地indexer_tip和最新区块高度差值或指出无法计算
+if [[ $indexer_tip =~ ^[0-9]+$ && $latest_height =~ ^[0-9]+$ ]]; then
+    difference=$(($latest_height - $indexer_tip))
     if [[ $difference -lt 0 ]]; then
         difference=$((-$difference)) # 转换为绝对值
     fi
-    sync_rate=$(echo "scale=10; $localhost_height * 100 / $latest_height" | bc | awk '{printf "%.2f\n", $0}')
+    sync_rate=$(echo "scale=10; $indexer_tip * 100 / $latest_height" | bc | awk '{printf "%.2f\n", $0}')
     sync_rate="${sync_rate}%"
 else
     difference="无法计算"
@@ -67,8 +67,10 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
 
     if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
         cat result_${start_day}.log >tmp_result_${start_day}.log
-        echo "ckb已同步到最新高度, 4小时后会被kill掉, 请及时查询" >>tmp_result_${start_day}.log
+        echo "" >>tmp_result_${start_day}.log
+        echo "ckb已同步到最新高度, 4小时后会被kill掉, 请及时查询。" >>tmp_result_${start_day}.log
         python3 sendMsg.py tmp_result_${start_day}.log
+        rm -f tmp_result_${start_day}.log
     fi
 
 fi
