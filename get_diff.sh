@@ -134,6 +134,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
         NODE_IP=$(curl ifconfig.me)
         echo "详见: https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>result_${start_day}.log
         python3 sendMsg.py result_${start_day}.log
+        toggle_env
 
         # replay逻辑
         if [ "${env}" = "mainnet" ]; then
@@ -154,7 +155,5 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
             nohup sudo ./ckb replay --tmp-target ../replay --profile 1 ${replay_height} | grep block_verifier >"../$log_file" 2>&1 &
             cd ..
         fi
-
-        toggle_env
     fi
 fi
