@@ -96,10 +96,10 @@ toggle_env() {
         sed -i "1s/.*/mainnet/" env.txt
     elif [ "$fourth_line" = "3" ]; then
         sed -i "4s/.*/4/" env.txt
-        sed -i "1s/.*/mainnet/" env.txt
+        sed -i "1s/.*/testnet/" env.txt
     elif [ "$fourth_line" = "4" ]; then
         sed -i "4s/.*/1/" env.txt
-        sed -i "1s/.*/testnet/" env.txt
+        sed -i "1s/.*/mainnet/" env.txt
     else
         echo "第四行不是1、2、3或4, 未做任何更改"
     fi
