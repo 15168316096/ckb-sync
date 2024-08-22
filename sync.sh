@@ -16,7 +16,7 @@ if [ ! -f "env.txt" ]; then
     echo "mainnet" >env.txt
     echo "2024-01-01" >>env.txt
     echo "1" >>env.txt
-    echo "1" >>env.txt
+    echo "3" >>env.txt
 fi
 
 # 判断当前是否需要执行
