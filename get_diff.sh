@@ -144,7 +144,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 调整时区差异（减去8小时）
     sync_start_timestamp=$(((sync_start_timestamp_utc - 8 * 3600) * 1000))
 
-    if [[ $time_diff -ge 14400 ]]; then
+    if [[ $time_diff -ge 7200 ]]; then
         # 调用killckb函数并记录kill_time
         killckb
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_height,当前indexer_tip: $indexer_tip)" >>result_${start_day}.log
