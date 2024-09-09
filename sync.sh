@@ -40,27 +40,29 @@ if [ "$third_line" != "1" ]; then
     restart_time=$(date +%s)
     sudo nohup ./ckb run >/dev/null 2>&1 &
     while true; do
-      # 检查端口上是否有进程
-      if sudo lsof -i:8114 -t >/dev/null; then
-        # 计算耗时
-        end_time=$(date +%s)
-        duration=$((end_time - restart_time))
-        echo "重启耗时: ${duration}秒"
-        break
-      fi
+        # 检查端口上是否有进程
+        if sudo lsof -i:8114 -t >/dev/null; then
+            # 计算耗时
+            end_time=$(date +%s)
+            duration=$((end_time - restart_time))
+            echo "重启耗时: ${duration}秒"
+            break
+        fi
 
-      # 每秒检查一次
-      sleep 1
+        # 每秒检查一次
+        sleep 1
 
-      # 计算当前耗时
-      current_time=$(date +%s)
-      current_duration=$((current_time - restart_time))
+        # 计算当前耗时
+        current_time=$(date +%s)
+        current_duration=$((current_time - restart_time))
 
-      # 如果耗时超过60秒，则打印信息并退出循环
-      if [ "$current_duration" -gt 60 ]; then
-        echo "超时信息：重启过程耗时超过60秒"
-        break
-      fi
+        # 如果耗时超过60秒，则打印信息并退出循环
+        if [ "$current_duration" -gt 60 ]; then
+            echo "重启过程耗时超过60秒"
+            echo "$current_time 60秒内ckb未重启成功" >restart.log
+            python3 sendMsg.py restart.log
+            break
+        fi
     done
     exit 0
 else
