@@ -34,7 +34,7 @@ if [ "$third_line" != "1" ]; then
     # 如果第三行不是 1，则打印信息、重启ckb、退出
     echo "$current_time 无需执行仅重启"
     killckb
-    sleep 300
+    sleep 180
     cd ${env}_ckb_*_x86_64-unknown-linux-gnu
     # 记录重启开始时间
     restart_time=$(date +%s)
