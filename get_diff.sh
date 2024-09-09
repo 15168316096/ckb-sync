@@ -68,7 +68,7 @@ if ! grep -q "sync_end" result_${start_day}.log && [[ $difference =~ ^[0-9]+$ ]]
     if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
         head -n 3 result_${start_day}.log >tmp_result_${start_day}.log
         echo "" >>tmp_result_${start_day}.log
-        echo "indexer已同步到最新高度, 4小时后会kill掉ckb进程, 请及时查询。" >>tmp_result_${start_day}.log
+        echo "indexer已同步到最新高度, 2小时后会kill掉ckb进程, 请及时查询。" >>tmp_result_${start_day}.log
         python3 sendMsg.py tmp_result_${start_day}.log
         rm -f tmp_result_${start_day}.log
     fi
