@@ -113,11 +113,11 @@ toggle_env() {
     local fourth_line=$(sed -n '4p' env.txt)
 
     # 根据第四行的值来更改第一行和第四行
-    if [ "$fourth_line" = "1" ]; then
-        sed -i "4s/.*/2/" env.txt
+    if [ "$fourth_line" = "3" ]; then
+        sed -i "4s/.*/4/" env.txt
         sed -i "1s/.*/testnet/" env.txt
     else
-        sed -i "4s/.*/1/" env.txt
+        sed -i "4s/.*/3/" env.txt
         sed -i "1s/.*/mainnet/" env.txt
     fi
 
