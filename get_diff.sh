@@ -83,6 +83,31 @@ killckb() {
     done
 }
 
+#toggle_env() {
+#    local first_line=$(sed -n '1p' env.txt)
+#    local fourth_line=$(sed -n '4p' env.txt)
+#
+#    # 根据第四行的值来更改第一行和第四行
+#    if [ "$fourth_line" = "1" ]; then
+#        sed -i "4s/.*/2/" env.txt
+#        sed -i "1s/.*/mainnet/" env.txt
+#    elif [ "$fourth_line" = "2" ]; then
+#        sed -i "4s/.*/3/" env.txt
+#        sed -i "1s/.*/mainnet/" env.txt
+#    elif [ "$fourth_line" = "3" ]; then
+#        sed -i "4s/.*/4/" env.txt
+#        sed -i "1s/.*/testnet/" env.txt
+#    elif [ "$fourth_line" = "4" ]; then
+#        sed -i "4s/.*/1/" env.txt
+#        sed -i "1s/.*/mainnet/" env.txt
+#    else
+#        echo "第四行不是1、2、3或4, 未做任何更改"
+#    fi
+#
+#    # 无论如何都将第三行设置为1
+#    sed -i "3s/.*/1/" env.txt
+#}
+
 toggle_env() {
     local first_line=$(sed -n '1p' env.txt)
     local fourth_line=$(sed -n '4p' env.txt)
@@ -90,18 +115,10 @@ toggle_env() {
     # 根据第四行的值来更改第一行和第四行
     if [ "$fourth_line" = "1" ]; then
         sed -i "4s/.*/2/" env.txt
-        sed -i "1s/.*/mainnet/" env.txt
-    elif [ "$fourth_line" = "2" ]; then
-        sed -i "4s/.*/3/" env.txt
-        sed -i "1s/.*/mainnet/" env.txt
-    elif [ "$fourth_line" = "3" ]; then
-        sed -i "4s/.*/4/" env.txt
         sed -i "1s/.*/testnet/" env.txt
-    elif [ "$fourth_line" = "4" ]; then
+    else
         sed -i "4s/.*/1/" env.txt
         sed -i "1s/.*/mainnet/" env.txt
-    else
-        echo "第四行不是1、2、3或4, 未做任何更改"
     fi
 
     # 无论如何都将第三行设置为1
