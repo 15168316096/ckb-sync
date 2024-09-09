@@ -36,7 +36,32 @@ if [ "$third_line" != "1" ]; then
     killckb
     sleep 300
     cd ${env}_ckb_*_x86_64-unknown-linux-gnu
+    # 记录重启开始时间
+    restart_time=$(date +%s)
     sudo nohup ./ckb run >/dev/null 2>&1 &
+    while true; do
+      # 检查端口上是否有进程
+      if sudo lsof -i:8114 -t >/dev/null; then
+        # 计算耗时
+        end_time=$(date +%s)
+        duration=$((end_time - restart_time))
+        echo "重启耗时: ${duration}秒"
+        break
+      fi
+
+      # 每秒检查一次
+      sleep 1
+
+      # 计算当前耗时
+      current_time=$(date +%s)
+      current_duration=$((current_time - restart_time))
+
+      # 如果耗时超过60秒，则打印信息并退出循环
+      if [ "$current_duration" -gt 60 ]; then
+        echo "超时信息：重启过程耗时超过60秒"
+        break
+      fi
+    done
     exit 0
 else
     # 如果第三行是 1，则打印信息并继续执行
