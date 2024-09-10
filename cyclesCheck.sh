@@ -33,6 +33,7 @@ for ((i = 0; i < ${#files1[@]}; i++)); do
     if [ -f "${files2[$i]}" ]; then
         echo "Processing ${files1[$i]} and ${files2[$i]}..."
         node compareLogs.js ${files1[$i]} ${files2[$i]}
+        echo ""
     else
         echo "No matching file chunk for ${files1[$i]}"
     fi
