@@ -40,8 +40,5 @@ for ((i = 0; i < ${#files1[@]}; i++)); do
 done
 
 # 删除所有分割的临时文件
-echo "Deleting temporary files..."
 rm ${log1}_part_*
 rm ${log2}_part_*
-
-echo "Temporary files deleted."
