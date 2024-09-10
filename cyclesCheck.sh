@@ -21,8 +21,8 @@ echo "Size of $log2:"
 ls -lh $log2
 
 # 使用 parallel 分割文件
-parallel --pipepart --block ${lines_per_file}l -a $log1 --round-robin split -d -l $lines_per_file - ${log1}_part_{#}.log
-parallel --pipepart --block ${lines_per_file}l -a $log2 --round-robin split -d -l $lines_per_file - ${log2}_part_{#}.log
+parallel --pipepart --block ${lines_per_file} l -a $log1 --round-robin split -d -l $lines_per_file - ${log1}_part_{#}.log
+parallel --pipepart --block ${lines_per_file} l -a $log2 --round-robin split -d -l $lines_per_file - ${log2}_part_{#}.log
 
 # 生成包含分割文件列表的数组
 files1=(${log1}_part_*)
