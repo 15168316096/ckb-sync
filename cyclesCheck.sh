@@ -20,9 +20,11 @@ ls -lh $log1
 echo "Size of $log2:"
 ls -lh $log2
 
-# 使用 parallel 分割文件
-parallel --pipepart --block ${lines_per_file}l -a $log1 split -d -l ${lines_per_file} - ${log1}_part_{#}.log
-parallel --pipepart --block ${lines_per_file}l -a $log2 split -d -l ${lines_per_file} - ${log2}_part_{#}.log
+# 使用 split 命令并行分割文件
+split -l $lines_per_file $log1 ${log1}_part_ &  # 在后台执行
+split -l $lines_per_file $log2 ${log2}_part_ &  # 在后台执行
+
+wait # 等待上述后台命令执行完成
 
 # 生成包含分割文件列表的数组
 files1=(${log1}_part_*)
