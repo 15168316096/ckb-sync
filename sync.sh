@@ -60,6 +60,8 @@ if [ "$third_line" != "1" ]; then
         if [ "$current_duration" -gt 60 ]; then
             echo "重启过程耗时超过60秒"
             echo "$current_time 60秒内ckb未重启成功" >restart.log
+            cp ../sendMsg.py sendMsg.py
+            cp ../restart_timeout/.env .env
             python3 sendMsg.py restart.log
             break
         fi
