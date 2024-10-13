@@ -136,7 +136,7 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
     # 获取当前时间
     current_timestamp=$(TZ='Asia/Shanghai' date +%s)
     # 计算时间差（单位：秒）
-    echo "current_timestamp: $(current_timestamp) sync_end_timestamp: $(sync_end_timestamp)"
+    echo "current_timestamp: ${current_timestamp} sync_end_timestamp: ${sync_end_timestamp}"
     time_diff=$((current_timestamp - sync_end_timestamp))
 
     #获取同步开始时间戳
