@@ -2,8 +2,8 @@
 ```bash
 # There is an 8-hour time difference. The task starts at 9:30 AM every day.
 30 1 * * * cd /home/ckb/scz/ckb-sync && sudo bash sync.sh >> sync.log 2>&1
-# Statistics are collected at 10 and 40 minutes past every hour.
-10,40 * * * * cd /home/ckb/scz/ckb-sync && sudo bash get_diff.sh
+# Statistics are collected every 20 minutes.
+*/20 * * * * cd /home/ckb/scz/ckb-sync && sudo bash get_diff.sh >> get_diff.log 2>&1
 ```
 ## Instructions
 Python3 and packages such as discord and python-dotenv need to be installed on the server for testing synchronization.
