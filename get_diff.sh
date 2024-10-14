@@ -167,8 +167,12 @@ if grep -q "sync_end" result_${start_day}.log && ! grep -q "kill_time" result_${
         fi
 
         ckb_version=$(sed -n '1p' result_${start_day}.log | grep -oP 'ckb \K[^ ]+(?=\s*\()')
-        if [[ "$ckb_version" == *"rc"* && ! "$ckb_version" =~ rc1$ ]]; then
-            echo "$ckb_version contains 'rc' but does not end with 'rc1'. Exiting..." >>diff_${start_day}.log
+#        if [[ "$ckb_version" == *"rc"* && ! "$ckb_version" =~ rc1$ ]]; then
+#            echo "$ckb_version contains 'rc' but does not end with 'rc1'. Exiting..." >>diff_${start_day}.log
+#            exit 0
+#        fi
+        if [[ "$ckb_version" == *"rc"* ]]; then
+            echo "$ckb_version contains 'rc'. Exiting..." >> diff_${start_day}.log
             exit 0
         fi
 
