@@ -161,7 +161,11 @@ if grep -q "sync_end" "$result_log" && ! grep -q "kill_time" "$result_log"; then
         echo "kill_time: $(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")（当前高度：$localhost_height,当前indexer_tip: $indexer_tip)" >>"$result_log"
         NODE_IP=$(curl ifconfig.me)
         echo "详见: https://grafana-monitor.nervos.tech/d/pThsj6xVz/test?orgId=1&var-url=$NODE_IP:8100&from=${sync_start_timestamp}&to=${current_timestamp}000" >>"$result_log"
-        python3 sendMsg.py "$result_log"
+        if [[ "$result_log" == without_restart_result* ]]; then
+            python3 sendMsg.py "$result_log" .without_restart_env
+        else
+            python3 sendMsg.py "$result_log"
+        fi
         toggle_env
 
         # replay逻辑

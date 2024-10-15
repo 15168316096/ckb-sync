@@ -3,17 +3,20 @@ import sys
 from dotenv import load_dotenv
 import os
 
+# 检查是否有足够的参数，至少需要一个文件名
+if len(sys.argv) < 2:
+    print("使用方法: python3 sendMsg.py <文件名> [<环境变量文件>]")
+    sys.exit(1)
+
+# 环境文件参数是可选的
+env_file = sys.argv[2] if len(sys.argv) > 2 else '.env'
+
 # 加载环境变量
-load_dotenv()
+load_dotenv(env_file)
 
 # 从环境变量中获取TOKEN和CHANNEL_ID
 TOKEN = os.getenv("DISCORD_TOKEN")
 CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID"))
-
-# 确保传入了文件名参数
-if len(sys.argv) < 2:
-    print("使用方法: python3 sendMsg.py <文件名>")
-    sys.exit(1)
 
 # 获取文件名
 file_name = sys.argv[1]

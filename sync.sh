@@ -67,8 +67,8 @@ if [ "$is_exec" != "1" ]; then
             echo "重启过程耗时超过60秒"
             echo "$current_time 60秒内ckb未重启成功" >restart.log
             cp ../sendMsg.py sendMsg.py
-            cp ../tmp_for_restart_timeout/.env .env
-            python3 sendMsg.py restart.log
+            cp ../.restart_timeout_env .restart_timeout_env
+            python3 sendMsg.py restart.log .restart_timeout_env
             break
         fi
     done
