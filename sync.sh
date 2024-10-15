@@ -175,7 +175,7 @@ fi
 if [ -z "${assume_valid_target}" ]; then
     sudo nohup ./ckb run >/dev/null 2>&1 &
     # https://github.com/nervosnetwork/ckb/blob/develop/util/constant/src/default_assume_valid_target.rs
-    echo "assume-valid-target: default" >>.../"$result_log"
+    echo "assume-valid-target: default" >>../"$result_log"
 else
     sudo nohup ./ckb run --assume-valid-target "$assume_valid_target" >/dev/null 2>&1 &
     echo "assume-valid-target: ${assume_valid_target}" >>../$result_log
@@ -183,7 +183,7 @@ fi
 
 echo "$(grep -c ^processor /proc/cpuinfo)C$(free -h | grep Mem | awk '{print $2}' | sed 's/Gi//')G    $(lsb_release -d | sed 's/Description:\s*//')    $(lscpu | grep "Model name" | cut -d ':' -f2 | xargs)" >>../$result_log
 sync_start=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
-echo "sync_start: ${sync_start}" >>.../"$result_log"
+echo "sync_start: ${sync_start}" >>../"$result_log"
 
 # 下次执行不再拉包启动ckb
 cd ..
