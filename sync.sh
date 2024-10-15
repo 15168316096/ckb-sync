@@ -41,7 +41,7 @@ if [ "$is_exec" != "1" ]; then
     echo "$current_time 无需执行仅重启"
     killckb
     sleep 180
-    cd "${env}_ckb_*_x86_64-unknown-linux-gnu" || exit
+    cd "${env}"_ckb_*_x86_64-unknown-linux-gnu || exit
     # 记录重启开始时间
     restart_time=$(date +%s)
     sudo nohup ./ckb run >/dev/null 2>&1 &
@@ -98,7 +98,7 @@ if [ ! -f "$tar_name" ]; then
     wget -q "https://github.com/nervosnetwork/ckb/releases/download/${ckb_version}/${tar_name}"
 fi
 
-sudo rm -rf "${env}_ckb_*_x86_64-unknown-linux-gnu"
+sudo rm -rf "${env}"_ckb_*_x86_64-unknown-linux-gnu
 tar xzvf "${tar_name}"
 rm -f "${tar_name}"
 mv "ckb_${ckb_version}_x86_64-unknown-linux-gnu" "${env}_ckb_${ckb_version}_x86_64-unknown-linux-gnu"
