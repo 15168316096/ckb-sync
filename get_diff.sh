@@ -42,6 +42,12 @@ fi
 
 echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") indexer_tip: ${indexer_tip} height: ${localhost_height} ${env}_height: ${latest_height} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_day}.log
 
+if [ "$exec_type" -eq 5 ] || [ "$exec_type" -eq 6 ]; then
+    result_log="without_restart_result_${start_day}.log"
+else
+    result_log="result_${start_day}.log"
+fi
+
 # 检查sync_end是否存在，并且差值小于总高度的1%
 if ! grep -q "sync_end" "$result_log" && [[ $difference =~ ^[0-9]+$ ]] && [[ $difference -lt 13000 ]]; then
     sync_end=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S")
@@ -132,11 +138,6 @@ toggle_env() {
     sed -i "3s/.*/1/" env.txt
 }
 
-if [ "$exec_type" -eq 5 ] || [ "$exec_type" -eq 6 ]; then
-    result_log="without_restart_result_${start_day}.log"
-else
-    result_log="result_${start_day}.log"
-fi
 # 检查是否存在sync_end且不存在kill_time
 if grep -q "sync_end" "$result_log" && ! grep -q "kill_time" "$result_log"; then
     # 获取sync_end的Unix时间戳
