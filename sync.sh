@@ -32,7 +32,7 @@ is_exec=$(sed -n '3p' env.txt)
 exec_type=$(sed -n '4p' env.txt)
 
 if [ "$is_exec" -eq 0 ] && { [ "$exec_type" -eq 5 ] || [ "$exec_type" -eq 6 ]; }; then
-    echo "No restart for ckb in this test round"
+    echo "$current_time No restart for ckb in this test round"
     exit 0
 fi
 
