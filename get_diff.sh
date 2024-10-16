@@ -3,7 +3,7 @@
 # 获取环境变量
 env=$(sed -n '1p' env.txt)
 start_day=$(sed -n '2p' env.txt)
-rich_indexer_type=$(sed -n '4p' env.txt)
+exec_type=$(sed -n '4p' env.txt)
 
 localhost_hex_height=$(curl -sS -X POST -H "Content-Type: application/json" -d '{"id": 1, "jsonrpc": "2.0", "method": "get_tip_header", "params": []}' http://localhost:8114 | jq -r '.result.number' | sed 's/^0x//')
 if [[ $? -ne 0 || -z "$localhost_hex_height" ]]; then
@@ -65,7 +65,7 @@ if ! grep -q "sync_end" "$result_log" && [[ $difference =~ ^[0-9]+$ ]] && [[ $di
 
     echo "同步到最新indexer高度耗时: ${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒" >>"$result_log"
 
-    if [ "$rich_indexer_type" = "1" ] || [ "$rich_indexer_type" = "2" ]; then
+    if [ "$exec_type" = "1" ] || [ "$exec_type" = "2" ]; then
         head -n 3 "$result_log" >"tmp_$result_log"
         echo "" >>"tmp_$result_log"
         echo "indexer已同步到最新高度, 3小时后会kill掉ckb进程, 请及时查询。" >>"tmp_$result_log"
@@ -132,8 +132,12 @@ toggle_env() {
     sed -i "3s/.*/1/" env.txt
 }
 
+if [ "$exec_type" -eq 5 ] || [ "$exec_type" -eq 6 ]; then
+    result_log="without_restart_result_${start_day}.log"
+else
+    result_log="result_${start_day}.log"
+fi
 # 检查是否存在sync_end且不存在kill_time
-result_log="result_${start_day}.log"
 if grep -q "sync_end" "$result_log" && ! grep -q "kill_time" "$result_log"; then
     # 获取sync_end的Unix时间戳
     sync_end_time_str=$(grep 'sync_end' "$result_log" | awk -F'sync_end: |（当前高度' '{print $2}')
