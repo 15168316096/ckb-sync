@@ -35,12 +35,15 @@ if [[ $indexer_tip =~ ^[0-9]+$ && $latest_height =~ ^[0-9]+$ ]]; then
     fi
     sync_rate=$(echo "scale=10; $indexer_tip * 100 / $latest_height" | bc | awk '{printf "%.2f\n", $0}')
     sync_rate="${sync_rate}%"
+    height_sync_rate=$(echo "scale=10; $localhost_height * 100 / $latest_height" | bc | awk '{printf "%.2f\n", $0}')
+    height_sync_rate="${height_sync_rate}%"
+
 else
     difference="无法计算"
     sync_rate="无法计算"
 fi
 
-echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") indexer_tip: ${indexer_tip} height: ${localhost_height} ${env}_height: ${latest_height} difference: ${difference}" sync_rate: ${sync_rate} >>diff_${start_day}.log
+echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") indexer_tip: ${indexer_tip} height: ${localhost_height} ${env}_height: ${latest_height} difference: ${difference} height_sync_rate: ${height_sync_rate} sync_rate: ${sync_rate}" >>diff_${start_day}.log
 
 if [ "$exec_type" -eq 5 ] || [ "$exec_type" -eq 6 ]; then
     result_log="without_restart_result_${start_day}.log"
