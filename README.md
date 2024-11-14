@@ -18,3 +18,12 @@ Please configure the .env file for sending test reports.
 DISCORD_CHANNEL_ID=YOUR_DISCORD_CHANNEL_ID
 DISCORD_TOKEN=YOUR_DISCORD_TOKEN
 ```
+## Debug
+If there are problems with CKB sync, you can use the following command and enable the debug configuration in the ckb.toml file to help identify the issue.
+```bash
+curl -s -X POST 127.0.0.1:8114  -H 'Content-Type: application/json' -d '{ "id": 42, "jsonrpc": "2.0", "method": "sync_state", "params": [] }' | jq
+curl -s -X POST 127.0.0.1:8114  -H 'Content-Type: application/json' -d '{ "id": 42, "jsonrpc": "2.0", "method": "get_peers", "params": [] }' | jq | grep last_common_header_number
+```
+Line 13 of ckb.toml
+
+`filter = "info,ckb=debug"`
