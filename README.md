@@ -18,6 +18,9 @@ Please configure the .env file for sending test reports.
 DISCORD_CHANNEL_ID=YOUR_DISCORD_CHANNEL_ID
 DISCORD_TOKEN=YOUR_DISCORD_TOKEN
 ```
+## exit the SSH session
+1. control + A
+2. D
 ## Debug
 If there are problems with CKB sync, you can use the following command and enable the debug configuration in the ckb.toml file to help identify the issue.
 ```bash
