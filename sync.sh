@@ -104,7 +104,7 @@ rm -f "${tar_name}"
 mv "ckb_${ckb_version}_x86_64-unknown-linux-gnu" "${env}_ckb_${ckb_version}_x86_64-unknown-linux-gnu"
 cd "${env}_ckb_${ckb_version}_x86_64-unknown-linux-gnu" || exit
 #rm -f ckb
-#cp /home/ckb/scz/ckb/target/prod/ckb .
+#cp /home/ckb/scz/ckb .
 
 killckb
 
