@@ -191,8 +191,8 @@ if grep -q "sync_end" "$result_log" && ! grep -q "kill_time" "$result_log"; then
         #            echo "$ckb_version contains 'rc' but does not end with 'rc1'. Exiting..." >>diff_${start_day}.log
         #            exit 0
         #        fi
-        if [[ "$ckb_version" == *"rc"* ]]; then
-            echo "$ckb_version contains 'rc'. Exiting..." >>"diff_${start_day}.log"
+        if [[ "$ckb_version" == *"rc"* || "$ckb_version" == *"pre"* ]]; then
+            echo "$ckb_version contains 'rc' or 'pre'. Exiting..." >> "diff_${start_day}.log"
             exit 0
         fi
 
