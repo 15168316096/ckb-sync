@@ -178,9 +178,9 @@ if grep -q "sync_end" "$result_log" && ! grep -q "kill_time" "$result_log"; then
 
         # replay逻辑
         if [ "${env}" = "mainnet" ]; then
-            replay_height=14143000
+            replay_height=15905888
         elif [ "${env}" = "testnet" ]; then
-            replay_height=14736000
+            replay_height=16861888
         else
             echo "Unknown environment: ${env}"
             exit 1
