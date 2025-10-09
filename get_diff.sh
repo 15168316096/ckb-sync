@@ -87,7 +87,7 @@ fi
 killckb() {
     PIDS=$(sudo lsof -ti:8114)
     for i in $PIDS; do
-        echo "killed the ckb $i"
+        echo "$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S") killed the ckb $i"
         sudo kill $i
     done
 }
